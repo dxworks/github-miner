@@ -1,0 +1,6 @@
+**/fppt.properties
+.idea
+*.iml
+target
+config
+results
