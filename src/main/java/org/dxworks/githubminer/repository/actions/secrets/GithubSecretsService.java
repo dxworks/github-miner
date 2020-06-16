@@ -1,7 +1,6 @@
 package org.dxworks.githubminer.repository.actions.secrets;
 
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpResponse;
 import com.google.common.collect.ImmutableMap;
 import com.goterl.lazycode.lazysodium.LazySodiumJava;
 import com.goterl.lazycode.lazysodium.SodiumJava;
@@ -16,6 +15,7 @@ import org.dxworks.githubminer.dto.response.repository.actions.secrets.SecretsFo
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.SecretsPublicKey;
 import org.dxworks.githubminer.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
+import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
 import java.util.List;
 

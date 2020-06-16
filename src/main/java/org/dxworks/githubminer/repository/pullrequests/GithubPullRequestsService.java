@@ -1,12 +1,12 @@
 package org.dxworks.githubminer.repository.pullrequests;
 
 import com.google.api.client.http.GenericUrl;
-import com.google.api.client.http.HttpResponse;
 import lombok.SneakyThrows;
 import org.dxworks.githubminer.dto.request.repository.pullrequests.CreatePullRequestBody;
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
 import org.dxworks.githubminer.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
+import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
 public class GithubPullRequestsService extends GithubRepositoryService {
 
