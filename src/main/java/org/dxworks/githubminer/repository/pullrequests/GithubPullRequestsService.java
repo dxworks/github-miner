@@ -41,7 +41,7 @@ public class GithubPullRequestsService extends GithubRepositoryService {
 
         String apiPath = getApiPath("pulls");
 
-        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(apiPath));
+        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new PullRequestUrl(apiPath, "all"));
 
         List<PullRequest> pullRequests = new ArrayList<>();
 
