@@ -3,6 +3,8 @@ package org.dxworks.githubminer.utils;
 import lombok.SneakyThrows;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 
+import java.io.FileInputStream;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 public class TestUtils {
@@ -19,7 +21,7 @@ public class TestUtils {
     @SneakyThrows
     private static void loadProperties() {
         properties = new Properties();
-        properties.load(TestUtils.class.getClassLoader().getResourceAsStream("test.properties"));
+        properties.load(new FileInputStream(Paths.get("config", "test.properties").toFile()));
     }
 
     public static BasicAuthenticationProvider getGithubCredentials() {
