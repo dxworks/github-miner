@@ -1,4 +1,4 @@
-package org.dxworks.githubminer.repository.pullrequests;
+package org.dxworks.githubminer.service.repository.pullrequests;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.api.client.util.Key;

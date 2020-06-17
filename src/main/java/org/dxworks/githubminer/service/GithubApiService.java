@@ -1,4 +1,4 @@
-package org.dxworks.githubminer;
+package org.dxworks.githubminer.service;
 
 import com.google.api.client.http.HttpRequestInitializer;
 import org.dxworks.githubminer.http.GithubHttpClient;

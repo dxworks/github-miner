@@ -1,9 +1,9 @@
-package org.dxworks.githubminer.repository.contents;
+package org.dxworks.githubminer.service.repository.contents;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.common.collect.ImmutableMap;
 import org.dxworks.githubminer.dto.request.repository.contents.CreateFileRequestBody;
-import org.dxworks.githubminer.repository.GithubRepositoryService;
+import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 import org.dxworks.utils.java.rest.client.response.HttpResponse;
 

@@ -1,11 +1,11 @@
-package org.dxworks.githubminer.repository.refs;
+package org.dxworks.githubminer.service.repository.refs;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.common.collect.ImmutableMap;
 import lombok.SneakyThrows;
 import org.dxworks.githubminer.dto.request.repository.refs.RefRequestBody;
 import org.dxworks.githubminer.dto.response.repository.refs.Ref;
-import org.dxworks.githubminer.repository.GithubRepositoryService;
+import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 import org.dxworks.utils.java.rest.client.response.HttpResponse;
 

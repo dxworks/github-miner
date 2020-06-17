@@ -1,11 +1,11 @@
-package org.dxworks.githubminer.invitations;
+package org.dxworks.githubminer.service.invitations;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import lombok.SneakyThrows;
-import org.dxworks.githubminer.GithubApiService;
 import org.dxworks.githubminer.dto.response.invitations.Invitation;
+import org.dxworks.githubminer.service.GithubApiService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
