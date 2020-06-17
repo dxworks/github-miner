@@ -7,7 +7,7 @@ on:
       - master
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
@@ -32,3 +32,6 @@ jobs:
       # Builds and installs the artifact
       - name: Build and Install
         run: mvn clean install
+        env:
+          MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
