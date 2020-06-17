@@ -14,6 +14,7 @@ import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GithubPullRequestsService extends GithubRepositoryService {
     private static final Type PULL_REQUESTS_LIST_TYPE = new TypeToken<List<PullRequest>>() {
@@ -41,57 +42,29 @@ public class GithubPullRequestsService extends GithubRepositoryService {
     }
 
     @SneakyThrows
-    public List<PullRequest> getAppPullRequests() {
+    public List<PullRequest> getAllPullRequests() {
         PullRequestUrl pullRequestUrl = new PullRequestUrl(getApiPath("pulls"), "all");
-        return getPaginationUtils().getAllElements(pullRequestUrl, PULL_REQUESTS_LIST_TYPE);
-    }
-
-    public String getPullRequestTitle(PullRequest pullRequest) {
-        return pullRequest.getTitle();
-    }
-
-    public String getPullRequestBody(PullRequest pullRequest) {
-        return pullRequest.getBody();
-    }
-
-    public String getPullRequestAuthor(PullRequest pullRequest) {
-        return pullRequest.getUser().getLogin();
-    }
-
-    public String getPullRequestCreationTime(PullRequest pullRequest) {
-        return pullRequest.getCreated_at();
-    }
-
-    public String getPullRequestMergingTime(PullRequest pullRequest) {
-        return pullRequest.getMerged_at();
-    }
-
-    public String getPullRequestUpdatingTime(PullRequest pullRequest) {
-        return pullRequest.getUpdated_at();
-    }
-
-    public String getPullRequestClosingTime(PullRequest pullRequest) {
-        return pullRequest.getClosed_at();
-    }
-
-    public String getPullRequestHeadLabel(PullRequest pullRequest) {
-        return pullRequest.getHead().getLabel();
-    }
-
-    public String getPullRequestHeadRef(PullRequest pullRequest) {
-        return pullRequest.getHead().getRef();
-    }
-
-    public String getPullRequestBaseLabel(PullRequest pullRequest) {
-        return pullRequest.getBase().getLabel();
-    }
-
-    public String getPullRequestBaseRef(PullRequest pullRequest) {
-        return pullRequest.getBase().getRef();
+        return getPaginationUtils().<PullRequest>getAllElements(pullRequestUrl, PULL_REQUESTS_LIST_TYPE).stream()
+                .map(pullRequest -> getPullRequest(pullRequest.getNumber()))
+                .collect(Collectors.toList());
     }
 
     @SneakyThrows
-    public List<RepoCommit> getPullRequestCommits(int pullRequestNumber) {
+    public PullRequest getPullRequest(long pullRequestNumber) {
+        String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number");
+
+        HttpResponse httpResponse = httpClient.get(new GenericUrl(apiPath));
+
+        return httpResponse.parseAs(PullRequest.class);
+    }
+
+    @SneakyThrows
+    public List<RepoCommit> getPullRequestCommits(PullRequest pullRequest) {
+        return getPullRequestCommits(pullRequest.getNumber());
+    }
+
+    @SneakyThrows
+    public List<RepoCommit> getPullRequestCommits(long pullRequestNumber) {
         String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number", "commits");
         GenericUrl pullRequestCommitsUrl = new GenericUrl(apiPath);
 
@@ -99,7 +72,12 @@ public class GithubPullRequestsService extends GithubRepositoryService {
     }
 
     @SneakyThrows
-    public List<PullRequestReview> getPullRequestReviews(int pullRequestNumber) {
+    public List<PullRequestReview> getPullRequestReviews(PullRequest pullRequest) {
+        return getPullRequestReviews(pullRequest.getNumber());
+    }
+
+    @SneakyThrows
+    public List<PullRequestReview> getPullRequestReviews(long pullRequestNumber) {
         String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number", "reviews");
         GenericUrl pullRequestReviewsUrl = new GenericUrl(apiPath);
 

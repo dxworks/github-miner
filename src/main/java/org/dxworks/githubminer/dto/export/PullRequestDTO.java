@@ -1,22 +1,31 @@
 package org.dxworks.githubminer.dto.export;
 
 import com.google.api.client.util.Key;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
 
 import java.util.List;
 
 @Data
-class PullRequestDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class PullRequestDTO {
 	@Key
-	private Integer id;
+	private Long id;
+	@Key
+	private Long number;
 	@Key
 	private String title;
 	@Key
 	private String body;
 	@Key
-	private BranchDTO head;
+	private PrBranchDTO head;
 	@Key
-	private BranchDTO base;
+	private PrBranchDTO base;
 	@Key
 	private List<String> commits;
 	@Key
@@ -28,13 +37,34 @@ class PullRequestDTO {
 	@Key
 	private String closedAt;
 	@Key
-	private String status;
+	private String state;
 	@Key
-	private String author;
+	private UserDTO createdBy;
 	@Key
-	private String merger;
+	private UserDTO assignee;
 	@Key
-	private List<String> approvedBy;
+	private UserDTO mergedBy;
 	@Key
 	private List<PullRequestCommentDTO> comments;
+	@Key
+	private List<PullRequestReviewDTO> reviews;
+
+	public static PullRequestDTO fromPullRequest(PullRequest pullRequest) {
+		return builder()
+				.id(pullRequest.getId())
+				.number(pullRequest.getNumber())
+				.title(pullRequest.getTitle())
+				.body(pullRequest.getBody())
+				.head(PrBranchDTO.fromPullRequestBranch(pullRequest.getHead()))
+				.base(PrBranchDTO.fromPullRequestBranch(pullRequest.getBase()))
+				.createdAt(pullRequest.getCreatedAt())
+				.mergedAt(pullRequest.getMergedAt())
+				.updatedAt(pullRequest.getUpdatedAt())
+				.closedAt(pullRequest.getClosedAt())
+				.state(pullRequest.getState())
+				.createdBy(UserDTO.fromUser(pullRequest.getUser()))
+				.assignee(UserDTO.fromUser(pullRequest.getAssignee()))
+				.mergedBy(UserDTO.fromUser(pullRequest.getMergedBy()))
+				.build();
+	}
 }

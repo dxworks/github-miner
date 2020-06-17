@@ -13,4 +13,6 @@ public class PullRequestReview extends GenericJson {
     private User user;
     @Key
     private String body;
+    @Key("submitted_at")
+    private String submittedAt;
 }

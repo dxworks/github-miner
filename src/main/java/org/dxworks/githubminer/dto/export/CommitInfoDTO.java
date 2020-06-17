@@ -1,18 +1,29 @@
 package org.dxworks.githubminer.dto.export;
 
 import com.google.api.client.util.Key;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class CommitInfoDTO {
 	@Key
 	private String id;
 	@Key
-	private String author;
+	private UserDTO author;
 	@Key
-	private String committer;
-	@Key
-	private String authorDate;
-	@Key
-	private String committerDate;
+	private UserDTO committer;
+
+	public static CommitInfoDTO fromCommit(RepoCommit repoCommit) {
+		return builder()
+				.id(repoCommit.getSha())
+				.author(UserDTO.fromUser(repoCommit.getAuthor()))
+				.committer(UserDTO.fromUser(repoCommit.getCommitter()))
+				.build();
+	}
 }

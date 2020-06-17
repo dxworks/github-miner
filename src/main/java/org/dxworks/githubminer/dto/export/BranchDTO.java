@@ -1,18 +1,26 @@
 package org.dxworks.githubminer.dto.export;
 
 import com.google.api.client.util.Key;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.dxworks.githubminer.dto.response.repository.branches.Branch;
 
 @Data
-class BranchDTO {
-	@Key
-	private String commit;
-	@Key
-	private String label;
-	@Key
-	private String ref;
-	@Key
-	private String user;
-	@Key
-	private RepoDTO repo;
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class BranchDTO {
+    @Key
+    private String name;
+    @Key
+    private String commit;
+
+    public static BranchDTO fromBranch(Branch branch) {
+        return builder()
+                .name(branch.getName())
+                .commit(branch.getSha())
+                .build();
+    }
 }

@@ -8,6 +8,8 @@ import org.dxworks.githubminer.dto.commons.User;
 @Data
 public class PullRequest extends GenericJson {
     @Key
+    private Long id;
+    @Key
     private String state;
     @Key
     private String title;
@@ -16,17 +18,21 @@ public class PullRequest extends GenericJson {
     @Key
     private User user;
     @Key
-    private String created_at;
-    @Key
-    private String merged_at;
-    @Key
-    private String updated_at;
-    @Key
-    private String closed_at;
+    private User assignee;
+    @Key("merged_by")
+    private User mergedBy;
+    @Key("created_at")
+    private String createdAt;
+    @Key("merged_at")
+    private String mergedAt;
+    @Key("updated_at")
+    private String updatedAt;
+    @Key("closed_at")
+    private String closedAt;
     @Key
     private PullRequestBranch head;
     @Key
     private PullRequestBranch base;
     @Key
-    private int number;
+    private Long number;
 }
