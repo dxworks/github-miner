@@ -1,0 +1,34 @@
+name: Build
+
+# Run workflow on commits to the `master` branch
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-id: marios-nexus
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
+      # Caches local maven repository
+      - name: Cache maven local repository
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      # Builds and installs the artifact
+      - name: Build and Install
+        run: mvn clean install
