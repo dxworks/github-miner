@@ -4,6 +4,7 @@ import lombok.Getter;
 import org.dxworks.githubminer.http.GithubHttpResponse;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -70,6 +71,13 @@ public class PageLinks {
     }
 
     private String getLinkHeader(String headerLink) {
-        return (String) response.getHeaders().get(headerLink);
+        Object headers = response.getHeaders().get(headerLink);
+        if(headers instanceof String)
+            return (String) headers;
+        else if(headers instanceof List)
+            return ((List<String>) headers).stream().findFirst()
+                    .orElse("");
+
+        return "";
     }
 }

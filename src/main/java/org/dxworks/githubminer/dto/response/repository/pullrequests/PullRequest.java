@@ -12,4 +12,18 @@ public class PullRequest extends GenericJson {
     private String title;
     @Key
     private String body;
+    @Key
+    private User user;
+    @Key
+    private String created_at;
+    @Key
+    private String merged_at;
+    @Key
+    private String updated_at;
+    @Key
+    private String closed_at;
+    @Key
+    private PullRequestBranch head;
+    @Key
+    private PullRequestBranch base;
 }
