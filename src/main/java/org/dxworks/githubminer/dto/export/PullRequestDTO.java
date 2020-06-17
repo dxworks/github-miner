@@ -14,9 +14,9 @@ class PullRequestDTO {
 	@Key
 	private String body;
 	@Key
-	private PRBranchDTO head;
+	private BranchDTO head;
 	@Key
-	private PRBranchDTO base;
+	private BranchDTO base;
 	@Key
 	private List<String> commits;
 	@Key

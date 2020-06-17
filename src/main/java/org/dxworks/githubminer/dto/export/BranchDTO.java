@@ -4,7 +4,7 @@ import com.google.api.client.util.Key;
 import lombok.Data;
 
 @Data
-class PRBranchDTO {
+class BranchDTO {
 	@Key
 	private String commit;
 	@Key
