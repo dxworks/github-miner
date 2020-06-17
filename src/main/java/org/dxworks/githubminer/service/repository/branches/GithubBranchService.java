@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 import org.dxworks.githubminer.dto.response.repository.branches.Branch;
 import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
-import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -25,10 +24,7 @@ public class GithubBranchService extends GithubRepositoryService {
 
     @SneakyThrows
     public List<Branch> getAllBranches() {
-        String apiPath = getApiPath("branches");
-
-        HttpResponse httpResponse = httpClient.get(new GenericUrl(apiPath));
-
-        return (List<Branch>) httpResponse.parseAs(BRANCH_LIST_TYPE);
+        GenericUrl commitsUrl = new GenericUrl(getApiPath("branches"));
+        return getPaginationUtils().getAllElements(commitsUrl, BRANCH_LIST_TYPE);
     }
 }
