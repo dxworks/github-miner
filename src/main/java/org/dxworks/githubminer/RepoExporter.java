@@ -1,17 +1,16 @@
 package org.dxworks.githubminer;
 
-import lombok.Data;
 import org.dxworks.githubminer.dto.export.*;
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit;
 import org.dxworks.githubminer.service.repository.branches.GithubBranchService;
 import org.dxworks.githubminer.service.repository.commits.GithubCommitService;
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService;
+import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Data
 public class RepoExporter {
     private String repo;
     private String owner;
@@ -26,6 +25,14 @@ public class RepoExporter {
         pullRequestsService = new GithubPullRequestsService(repo, owner);
         commitService = new GithubCommitService(repo, owner);
         branchService = new GithubBranchService(repo, owner);
+    }
+
+    public RepoExporter(String repo, String owner, BasicAuthenticationProvider basicAuthProvider) {
+        this.repo = repo;
+        this.owner = owner;
+        pullRequestsService = new GithubPullRequestsService(repo, owner, basicAuthProvider);
+        commitService = new GithubCommitService(repo, owner, basicAuthProvider);
+        branchService = new GithubBranchService(repo, owner, basicAuthProvider);
     }
 
     public RemoteInfoDTO export() {
