@@ -11,6 +11,15 @@ jobs:
     runs-on: ubuntu-18.04
     steps:
       - uses: actions/checkout@v2
+
+      - name: Cache maven local repository
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v1
         with:
@@ -18,6 +27,7 @@ jobs:
           server-id: marios-nexus
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
+
       - name: Publish package
         run: mvn clean deploy
         env:

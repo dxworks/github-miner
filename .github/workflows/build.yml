@@ -12,15 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Maven Central Repository
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-          server-id: marios-nexus
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-
-      # Caches local maven repository
       - name: Cache maven local repository
         uses: actions/cache@v1
         with:
@@ -29,7 +20,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      # Builds and installs the artifact
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-id: marios-nexus
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+
       - name: Build and Install
         run: mvn clean install
         env:
