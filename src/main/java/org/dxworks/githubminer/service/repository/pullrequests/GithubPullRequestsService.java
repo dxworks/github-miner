@@ -8,13 +8,11 @@ import org.dxworks.githubminer.dto.request.repository.pullrequests.CreatePullReq
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit;
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequestReview;
-import org.dxworks.githubminer.http.GithubHttpResponse;
 import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 public class GithubPullRequestsService extends GithubRepositoryService {
@@ -95,25 +93,16 @@ public class GithubPullRequestsService extends GithubRepositoryService {
     @SneakyThrows
     public List<RepoCommit> getPullRequestCommits(int pullRequestNumber) {
         String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number", "commits");
+        GenericUrl pullRequestCommitsUrl = new GenericUrl(apiPath);
 
-        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(apiPath));
-
-        List<RepoCommit> pullRequestCommits = new ArrayList<>();
-        pullRequestCommits.addAll((Collection<? extends RepoCommit>) httpResponse.parseAs(PULL_REQUESTS_COMMITS_LIST_TYPE));
-
-        return pullRequestCommits;
+        return getPaginationUtils().getAllElements(pullRequestCommitsUrl, PULL_REQUESTS_COMMITS_LIST_TYPE);
     }
 
     @SneakyThrows
     public List<PullRequestReview> getPullRequestReviews(int pullRequestNumber) {
         String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number", "reviews");
+        GenericUrl pullRequestReviewsUrl = new GenericUrl(apiPath);
 
-        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(apiPath));
-
-        List<PullRequestReview> pullRequestReviews = new ArrayList<>();
-
-        pullRequestReviews.addAll((Collection<? extends PullRequestReview>) httpResponse.parseAs(PULL_REQUESTS_REVIEW_LIST_TYPE));
-
-        return pullRequestReviews;
+        return getPaginationUtils().getAllElements(pullRequestReviewsUrl, PULL_REQUESTS_REVIEW_LIST_TYPE);
     }
 }
