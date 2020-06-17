@@ -5,14 +5,12 @@ import com.google.common.reflect.TypeToken;
 import lombok.SneakyThrows;
 import org.dxworks.githubminer.dto.request.repository.pullrequests.CreatePullRequestBody;
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
-import org.dxworks.githubminer.http.GithubHttpResponse;
 import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class GithubPullRequestsService extends GithubRepositoryService {
@@ -38,22 +36,8 @@ public class GithubPullRequestsService extends GithubRepositoryService {
 
     @SneakyThrows
     public List<PullRequest> getAppPullRequests() {
-
-        String apiPath = getApiPath("pulls");
-
-        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new PullRequestUrl(apiPath, "all"));
-
-        List<PullRequest> pullRequests = new ArrayList<>();
-
-        while (httpResponse != null && httpResponse.getPageLinks().getNext() != null) {
-            pullRequests.addAll((Collection<? extends PullRequest>) httpResponse.parseAs(PULL_REQUESTS_LIST_TYPE));
-            httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(httpResponse.getPageLinks().getNext()));
-        }
-
-        if(httpResponse != null && httpResponse.getPageLinks().getNext() == null)
-            pullRequests.addAll((Collection<? extends PullRequest>) httpResponse.parseAs(PULL_REQUESTS_LIST_TYPE));
-
-        return pullRequests;
+        PullRequestUrl pullRequestUrl = new PullRequestUrl(getApiPath("pulls"), "all");
+        return getPaginationUtils().getAllElements(pullRequestUrl, PULL_REQUESTS_LIST_TYPE);
     }
 
     @SneakyThrows
@@ -187,9 +171,4 @@ public class GithubPullRequestsService extends GithubRepositoryService {
 
         return pullRequestBasesRefs;
     }
-
-
-//    public List<PullRequestFile> getFilesForPR(int prNumber) {
-//        String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(prNumber)), "pulls", ":pull_number", "files");
-//    }
 }
