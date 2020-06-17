@@ -10,4 +10,6 @@ public class PullRequestBranch extends GenericJson {
     private String label;
     @Key
     private String ref;
+    @Key
+    private String sha;
 }

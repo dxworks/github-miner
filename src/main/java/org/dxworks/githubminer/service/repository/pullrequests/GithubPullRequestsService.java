@@ -1,10 +1,13 @@
 package org.dxworks.githubminer.service.repository.pullrequests;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import lombok.SneakyThrows;
 import org.dxworks.githubminer.dto.request.repository.pullrequests.CreatePullRequestBody;
+import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit;
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
+import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequestReview;
 import org.dxworks.githubminer.http.GithubHttpResponse;
 import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
@@ -17,6 +20,10 @@ import java.util.List;
 
 public class GithubPullRequestsService extends GithubRepositoryService {
     private static final Type PULL_REQUESTS_LIST_TYPE = new TypeToken<List<PullRequest>>() {
+    }.getType();
+    private static final Type PULL_REQUESTS_COMMITS_LIST_TYPE = new TypeToken<List<RepoCommit>>() {
+    }.getType();
+    private static final Type PULL_REQUESTS_REVIEW_LIST_TYPE = new TypeToken<List<PullRequestReview>>() {
     }.getType();
 
     public GithubPullRequestsService(String owner, String repo) {
@@ -50,146 +57,78 @@ public class GithubPullRequestsService extends GithubRepositoryService {
             httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(httpResponse.getPageLinks().getNext()));
         }
 
-        if(httpResponse != null && httpResponse.getPageLinks().getNext() == null)
+        if (httpResponse != null && httpResponse.getPageLinks().getNext() == null)
             pullRequests.addAll((Collection<? extends PullRequest>) httpResponse.parseAs(PULL_REQUESTS_LIST_TYPE));
 
         return pullRequests;
     }
 
-    @SneakyThrows
-    public List<String> getPullRequestTitles() {
-        List<PullRequest> pullRequests = getAppPullRequests();
+    public String getPullRequestTitle(PullRequest pullRequest) {
+        return pullRequest.getTitle();
+    }
 
-        List<String> pullRequestTitles = new ArrayList<>();
+    public String getPullRequestBody(PullRequest pullRequest) {
+        return pullRequest.getBody();
+    }
 
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestTitles.add(pullRequest.getTitle());
+    public String getPullRequestAuthor(PullRequest pullRequest) {
+        return pullRequest.getUser().getLogin();
+    }
 
-        return pullRequestTitles;
+    public String getPullRequestCreationTime(PullRequest pullRequest) {
+        return pullRequest.getCreated_at();
+    }
+
+    public String getPullRequestMergingTime(PullRequest pullRequest) {
+        return pullRequest.getMerged_at();
+    }
+
+    public String getPullRequestUpdatingTime(PullRequest pullRequest) {
+        return pullRequest.getUpdated_at();
+    }
+
+    public String getPullRequestClosingTime(PullRequest pullRequest) {
+        return pullRequest.getClosed_at();
+    }
+
+    public String getPullRequestHeadLabel(PullRequest pullRequest) {
+        return pullRequest.getHead().getLabel();
+    }
+
+    public String getPullRequestHeadRef(PullRequest pullRequest) {
+        return pullRequest.getHead().getRef();
+    }
+
+    public String getPullRequestBaseLabel(PullRequest pullRequest) {
+        return pullRequest.getBase().getLabel();
+    }
+
+    public String getPullRequestBaseRef(PullRequest pullRequest) {
+        return pullRequest.getBase().getRef();
     }
 
     @SneakyThrows
-    public List<String> getPullRequestBodies() {
-        List<PullRequest> pullRequests = getAppPullRequests();
+    public List<RepoCommit> getPullRequestCommits(int pullRequestNumber) {
+        String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number", "commits");
 
-        List<String> pullRequestBodies = new ArrayList<>();
+        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(apiPath));
 
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestBodies.add(pullRequest.getBody());
+        List<RepoCommit> pullRequestCommits = new ArrayList<>();
+        pullRequestCommits.addAll((Collection<? extends RepoCommit>) httpResponse.parseAs(PULL_REQUESTS_COMMITS_LIST_TYPE));
 
-        return pullRequestBodies;
+        return pullRequestCommits;
     }
 
     @SneakyThrows
-    public List<String> getPullRequestAuthors() {
-        List<PullRequest> pullRequests = getAppPullRequests();
+    public List<PullRequestReview> getPullRequestReviews(int pullRequestNumber) {
+        String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number", "reviews");
 
-        List<String> pullRequestAuthors = new ArrayList<>();
+        GithubHttpResponse httpResponse = (GithubHttpResponse) httpClient.get(new GenericUrl(apiPath));
 
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestAuthors.add(pullRequest.getUser().getLogin());
+        List<PullRequestReview> pullRequestReviews = new ArrayList<>();
 
-        return pullRequestAuthors;
+        pullRequestReviews.addAll((Collection<? extends PullRequestReview>) httpResponse.parseAs(PULL_REQUESTS_REVIEW_LIST_TYPE));
+
+        return pullRequestReviews;
     }
-
-    @SneakyThrows
-    public List<String> getPullRequestCreationTimes() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestCreationTimes = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestCreationTimes.add(pullRequest.getCreated_at());
-
-        return pullRequestCreationTimes;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestMergingTimes() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestMergingTimes = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestMergingTimes.add(pullRequest.getMerged_at());
-
-        return pullRequestMergingTimes;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestUpdatingTimes() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestUpdatingTimes = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestUpdatingTimes.add(pullRequest.getUpdated_at());
-
-        return pullRequestUpdatingTimes;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestClosingTimes() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestClosingTimes = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestClosingTimes.add(pullRequest.getClosed_at());
-
-        return pullRequestClosingTimes;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestHeadsLabels() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestHeadsLabels = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestHeadsLabels.add(pullRequest.getHead().getLabel());
-
-        return pullRequestHeadsLabels;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestHeadsRefs() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestHeadsRefs = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestHeadsRefs.add(pullRequest.getHead().getRef());
-
-        return pullRequestHeadsRefs;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestBasesLabels() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestBasesLabels = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestBasesLabels.add(pullRequest.getBase().getLabel());
-
-        return pullRequestBasesLabels;
-    }
-
-    @SneakyThrows
-    public List<String> getPullRequestBasesRefs() {
-        List<PullRequest> pullRequests = getAppPullRequests();
-
-        List<String> pullRequestBasesRefs = new ArrayList<>();
-
-        for(PullRequest pullRequest : pullRequests)
-            pullRequestBasesRefs.add(pullRequest.getBase().getRef());
-
-        return pullRequestBasesRefs;
-    }
-
-
-//    public List<PullRequestFile> getFilesForPR(int prNumber) {
-//        String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(prNumber)), "pulls", ":pull_number", "files");
-//    }
 }

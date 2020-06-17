@@ -1,7 +1,10 @@
 package org.dxworks.githubminer.repository.pullrequests;
 
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
+import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService;
 import org.dxworks.githubminer.utils.TestUtils;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,104 +14,104 @@ import static org.junit.jupiter.api.Assertions.*;
 class GithubPullRequestsServiceIT {
 
     private GithubPullRequestsService service = new GithubPullRequestsService("andrei2699", "Music-Events-Application", TestUtils.getGithubCredentials());
+    private List<PullRequest> pullRequests;
+
+    @BeforeEach
+    void setUp() {
+        pullRequests = service.getAppPullRequests();
+    }
+
+    @AfterEach
+    void tearDown() {
+        pullRequests = null;
+    }
 
     @Test
     void getAppPullRequests() {
-
-        List<PullRequest> pullRequests = service.getAppPullRequests();
-
         assertEquals(144, pullRequests.size());
     }
 
     @Test
     void getPullRequestTitles() {
-        List<String> pullRequestTitles = service.getPullRequestTitles();
-
-        assertEquals("Mea 128", pullRequestTitles.get(0));
-        assertEquals("Added Build.yml workflow to build the application on every push or pull request to Master branch", pullRequestTitles.get(pullRequestTitles.size()-1));
+        assertEquals("Mea 128", service.getPullRequestTitle(pullRequests.get(0)));
+        assertEquals("Added Build.yml workflow to build the application on every push or pull request to Master branch", service.getPullRequestTitle(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestBodies() {
-        List<String> pullRequestBodies = service.getPullRequestBodies();
-
-        assertEquals("", pullRequestBodies.get(0));
+        assertEquals("", service.getPullRequestBody(pullRequests.get(0)));
         assertEquals("After you merge this Pull Request, a job will be run by Github every time you create a Pull Requestfor the 'master' branch, of every time commits get pushed to the master branch.\n" +
                 "This way you will know if your application builds everytime you want to merge some changes to the holy 'master' branch.\n" +
                 "If you look just know, you should have a job running, or already finished. Hopefully it didn't fail ;)\n" +
                 "Anytime you want to see the result of these runs, you can find them under the Actions tab just on top of the repo page.\n" +
-                "Now go ahead and merge this PR! Then make sure your build succeeded on the master branch. If it didn't, fix it, ASAP!!!", pullRequestBodies.get(pullRequestBodies.size()-1));
+                "Now go ahead and merge this PR! Then make sure your build succeeded on the master branch. If it didn't, fix it, ASAP!!!", service.getPullRequestBody(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestAuthors() {
-        List<String> pullRequestAuthors = service.getPullRequestAuthors();
-
-        assertEquals("taniatopciov", pullRequestAuthors.get(0));
-        assertEquals("AndyMolin", pullRequestAuthors.get(pullRequestAuthors.size()-1));
+        assertEquals("taniatopciov", service.getPullRequestAuthor(pullRequests.get(0)));
+        assertEquals("AndyMolin", service.getPullRequestAuthor(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestCreationTimes() {
-        List<String> pullRequestCreationTimes = service.getPullRequestCreationTimes();
-
-        assertEquals("2020-06-08T09:23:01Z", pullRequestCreationTimes.get(0));
-        assertEquals("2020-04-27T13:25:27Z", pullRequestCreationTimes.get(pullRequestCreationTimes.size()-1));
+        assertEquals("2020-06-08T09:23:01Z", service.getPullRequestCreationTime(pullRequests.get(0)));
+        assertEquals("2020-04-27T13:25:27Z", service.getPullRequestCreationTime(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestMergingTimes() {
-        List<String> pullRequestMergingTimes = service.getPullRequestMergingTimes();
-
-        assertEquals("2020-06-08T09:25:13Z", pullRequestMergingTimes.get(0));
-        assertEquals("2020-04-27T14:50:08Z", pullRequestMergingTimes.get(pullRequestMergingTimes.size()-1));
+        assertEquals("2020-06-08T09:25:13Z", service.getPullRequestMergingTime(pullRequests.get(0)));
+        assertEquals("2020-04-27T14:50:08Z", service.getPullRequestMergingTime(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestUpdatingTimes() {
-        List<String> pullRequestUpdatingTimes = service.getPullRequestUpdatingTimes();
-
-        assertEquals("2020-06-08T09:25:13Z", pullRequestUpdatingTimes.get(0));
-        assertEquals("2020-04-27T14:50:08Z", pullRequestUpdatingTimes.get(pullRequestUpdatingTimes.size()-1));
+        assertEquals("2020-06-08T09:25:13Z", service.getPullRequestUpdatingTime(pullRequests.get(0)));
+        assertEquals("2020-04-27T14:50:08Z", service.getPullRequestUpdatingTime(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestClosingTimes() {
-        List<String> pullRequestClosingTimes = service.getPullRequestClosingTimes();
-
-        assertEquals("2020-06-08T09:25:13Z", pullRequestClosingTimes.get(0));
-        assertEquals("2020-04-27T14:50:08Z", pullRequestClosingTimes.get(pullRequestClosingTimes.size()-1));
+        assertEquals("2020-06-08T09:25:13Z", service.getPullRequestClosingTime(pullRequests.get(0)));
+        assertEquals("2020-04-27T14:50:08Z", service.getPullRequestClosingTime(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestHeadsLabels() {
-        List<String> pullRequestHeadsLabels = service.getPullRequestHeadsLabels();
-
-        assertEquals("andrei2699:MEA-128", pullRequestHeadsLabels.get(0));
-        assertEquals("andrei2699:build-actions", pullRequestHeadsLabels.get(pullRequestHeadsLabels.size()-1));
+        String sha = pullRequests.get(0).getHead().getSha();
+        System.out.println(sha);
+        assertEquals("andrei2699:MEA-128", service.getPullRequestHeadLabel(pullRequests.get(0)));
+        assertEquals("andrei2699:build-actions", service.getPullRequestHeadLabel(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestHeadsRefs() {
-        List<String> pullRequestHeadsRefs = service.getPullRequestHeadsRefs();
-
-        assertEquals("MEA-128", pullRequestHeadsRefs.get(0));
-        assertEquals("build-actions", pullRequestHeadsRefs.get(pullRequestHeadsRefs.size()-1));
+        assertEquals("MEA-128", service.getPullRequestHeadRef(pullRequests.get(0)));
+        assertEquals("build-actions", service.getPullRequestHeadRef(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestBasesLabels() {
-        List<String> pullRequestBasesLabels = service.getPullRequestBasesLabels();
-
-        assertEquals("andrei2699:master", pullRequestBasesLabels.get(0));
-        assertEquals("andrei2699:master", pullRequestBasesLabels.get(pullRequestBasesLabels.size()-1));
+        assertEquals("andrei2699:master", service.getPullRequestBaseLabel(pullRequests.get(0)));
+        assertEquals("andrei2699:master", service.getPullRequestBaseLabel(pullRequests.get(pullRequests.size()-1)));
     }
 
     @Test
     void getPullRequestBasesRefs() {
-        List<String> pullRequestBasesRefs = service.getPullRequestBasesRefs();
+        assertEquals("master", service.getPullRequestBaseRef(pullRequests.get(0)));
+        assertEquals("master", service.getPullRequestBaseRef(pullRequests.get(pullRequests.size()-1)));
+    }
 
-        assertEquals("master", pullRequestBasesRefs.get(0));
-        assertEquals("master", pullRequestBasesRefs.get(pullRequestBasesRefs.size()-1));
+    @Test
+    void getPullRequestCommitsSha() {
+        assertEquals("97a53e06a0dae8a2f6a317cd15ae3edfb004838b", service.getPullRequestCommits(pullRequests.get(0).getNumber()).get(0).getSha());
+        assertEquals("cc1cee578ac9d730bd11148d8c5f9371d80f5cd6", service.getPullRequestCommits(pullRequests.get(0).getNumber()).get(1).getSha());
+    }
+
+    @Test
+    void getPullRequestSate() {
+        assertEquals("APPROVED", service.getPullRequestReviews(pullRequests.get(0).getNumber()).get(0).getState());
+        assertEquals("andrei2699", service.getPullRequestReviews(pullRequests.get(0).getNumber()).get(0).getUser().getLogin());
     }
 }

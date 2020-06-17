@@ -3,6 +3,7 @@ package org.dxworks.githubminer.dto.response.repository.pullrequests;
 import com.google.api.client.json.GenericJson;
 import com.google.api.client.util.Key;
 import lombok.Data;
+import org.dxworks.githubminer.dto.commons.User;
 
 @Data
 public class PullRequest extends GenericJson {
@@ -26,4 +27,6 @@ public class PullRequest extends GenericJson {
     private PullRequestBranch head;
     @Key
     private PullRequestBranch base;
+    @Key
+    private int number;
 }
