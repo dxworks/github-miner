@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class RepoExporterTestIT {
+class RepoExporterIT {
 	private final RepoExporter repoExporter = new RepoExporter("andrei2699", "Music-Events-Application", TestUtils.getGithubCredentials());
 
 	@Test
