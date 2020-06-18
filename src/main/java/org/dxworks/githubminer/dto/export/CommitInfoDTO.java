@@ -20,6 +20,8 @@ public class CommitInfoDTO {
 	private UserDTO committer;
 
 	public static CommitInfoDTO fromCommit(RepoCommit repoCommit) {
+		if (repoCommit == null || com.google.api.client.util.Data.isNull(repoCommit))
+			return null;
 		return builder()
 				.id(repoCommit.getSha())
 				.author(UserDTO.fromUser(repoCommit.getAuthor()))

@@ -24,6 +24,8 @@ public class PrBranchDTO {
     private RepoDTO repo;
 
     public static PrBranchDTO fromPullRequestBranch(PullRequestBranch branch) {
+        if (branch == null || com.google.api.client.util.Data.isNull(branch))
+            return null;
         return builder()
                 .commit(branch.getSha())
                 .label(branch.getLabel())

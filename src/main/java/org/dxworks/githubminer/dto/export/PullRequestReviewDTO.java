@@ -22,6 +22,8 @@ public class PullRequestReviewDTO {
     private String date;
 
     public static PullRequestReviewDTO fromPullRequestReview(PullRequestReview pullRequestReview) {
+        if (pullRequestReview == null || com.google.api.client.util.Data.isNull(pullRequestReview))
+            return null;
         return builder()
                 .body(pullRequestReview.getBody())
                 .date(pullRequestReview.getSubmittedAt())

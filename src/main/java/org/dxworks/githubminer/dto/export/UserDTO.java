@@ -26,7 +26,7 @@ public class UserDTO {
     private String avatarUrl;
 
     public static UserDTO fromUser(User user) {
-        if (user == null)
+        if (user == null || com.google.api.client.util.Data.isNull(user))
             return null;
         return UserDTO.builder()
                 .avatarUrl(user.getAvatarUrl())

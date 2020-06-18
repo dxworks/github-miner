@@ -12,27 +12,27 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class RepoExporter {
-    private String repo;
-    private String owner;
+    private final String owner;
+    private final String repo;
 
-    private GithubPullRequestsService pullRequestsService;
-    private GithubCommitService commitService;
-    private GithubBranchService branchService;
+    private final GithubPullRequestsService pullRequestsService;
+    private final GithubCommitService commitService;
+    private final GithubBranchService branchService;
 
-    public RepoExporter(String repo, String owner) {
-        this.repo = repo;
-        this.owner = owner;
+    public RepoExporter(String owner, String repo) {
+        this.owner = repo;
+        this.repo = owner;
         pullRequestsService = new GithubPullRequestsService(repo, owner);
-        commitService = new GithubCommitService(repo, owner);
-        branchService = new GithubBranchService(repo, owner);
+        commitService = new GithubCommitService(owner, repo);
+        branchService = new GithubBranchService(owner, repo);
     }
 
-    public RepoExporter(String repo, String owner, BasicAuthenticationProvider basicAuthProvider) {
-        this.repo = repo;
+    public RepoExporter(String owner, String repo, BasicAuthenticationProvider basicAuthProvider) {
         this.owner = owner;
-        pullRequestsService = new GithubPullRequestsService(repo, owner, basicAuthProvider);
-        commitService = new GithubCommitService(repo, owner, basicAuthProvider);
-        branchService = new GithubBranchService(repo, owner, basicAuthProvider);
+        this.repo = repo;
+        pullRequestsService = new GithubPullRequestsService(owner, repo, basicAuthProvider);
+        commitService = new GithubCommitService(owner, repo, basicAuthProvider);
+        branchService = new GithubBranchService(owner, repo, basicAuthProvider);
     }
 
     public RemoteInfoDTO export() {

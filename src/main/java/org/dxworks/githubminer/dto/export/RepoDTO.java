@@ -20,14 +20,16 @@ public class RepoDTO {
 	@Key
 	private String fullName;
 	@Key
-	private String owner;
+	private UserDTO owner;
 
 	public static RepoDTO fromRepository(Repository repo) {
+		if (repo == null || com.google.api.client.util.Data.isNull(repo))
+			return null;
 		return builder()
 				.id(repo.getId())
 				.name(repo.getName())
 				.fullName(repo.getFullName())
-				.owner(repo.getOwner().getLogin())
+				.owner(UserDTO.fromUser(repo.getOwner()))
 				.build();
 	}
 }

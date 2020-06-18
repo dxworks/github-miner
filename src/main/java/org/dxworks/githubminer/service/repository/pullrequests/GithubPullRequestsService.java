@@ -4,6 +4,7 @@ import com.google.api.client.http.GenericUrl;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.dxworks.githubminer.dto.request.repository.pullrequests.CreatePullRequestBody;
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit;
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest;
@@ -16,6 +17,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class GithubPullRequestsService extends GithubRepositoryService {
     private static final Type PULL_REQUESTS_LIST_TYPE = new TypeToken<List<PullRequest>>() {
     }.getType();
@@ -53,6 +55,7 @@ public class GithubPullRequestsService extends GithubRepositoryService {
     public PullRequest getPullRequest(long pullRequestNumber) {
         String apiPath = getApiPath(ImmutableMap.of("pull_number", String.valueOf(pullRequestNumber)), "pulls", ":pull_number");
 
+        log.info("Retrieving " + apiPath);
         HttpResponse httpResponse = httpClient.get(new GenericUrl(apiPath));
 
         return httpResponse.parseAs(PullRequest.class);

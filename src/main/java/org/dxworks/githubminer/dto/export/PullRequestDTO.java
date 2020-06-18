@@ -50,6 +50,8 @@ public class PullRequestDTO {
 	private List<PullRequestReviewDTO> reviews;
 
 	public static PullRequestDTO fromPullRequest(PullRequest pullRequest) {
+		if (pullRequest == null || com.google.api.client.util.Data.isNull(pullRequest))
+			return null;
 		return builder()
 				.id(pullRequest.getId())
 				.number(pullRequest.getNumber())

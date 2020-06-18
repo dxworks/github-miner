@@ -18,6 +18,8 @@ public class BranchDTO {
     private String commit;
 
     public static BranchDTO fromBranch(Branch branch) {
+        if (branch == null || com.google.api.client.util.Data.isNull(branch))
+            return null;
         return builder()
                 .name(branch.getName())
                 .commit(branch.getSha())
