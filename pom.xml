@@ -33,19 +33,6 @@
         <main.class>org.dxworks.githubminer.Main</main.class>
     </properties>
 
-    <distributionManagement>
-        <repository>
-            <id>marios-nexus</id>
-            <name>maven-releases</name>
-            <url>http://89.39.83.106:8081/repository/maven-releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>marios-nexus</id>
-            <name>maven-snapshots</name>
-            <url>http://89.39.83.106:8081/repository/maven-snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <build>
         <plugins>
             <plugin>
@@ -86,13 +73,28 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
                 <version>2.8.2</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
             </plugin>
         </plugins>
     </build>
     <profiles>
+        <profile>
+            <id>github-default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <distributionManagement>
+                <repository>
+                    <id>github</id>
+                    <name>GitHub dxworks Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/dxworks/github-miner</url>
+                </repository>
+                <snapshotRepository>
+                    <id>github</id>
+                    <name>GitHub dxworks Apache Maven Packages</name>
+                    <url>https://maven.pkg.github.com/dxworks/github-miner</url>
+                </snapshotRepository>
+            </distributionManagement>
+        </profile>
         <profile>
             <id>deployDocker</id>
             <activation>
@@ -142,6 +144,18 @@
                     <name>nexus</name>
                 </property>
             </activation>
+            <distributionManagement>
+                <repository>
+                    <id>marios-nexus</id>
+                    <name>maven-releases</name>
+                    <url>http://89.39.83.106:8081/repository/maven-releases/</url>
+                </repository>
+                <snapshotRepository>
+                    <id>marios-nexus</id>
+                    <name>maven-snapshots</name>
+                    <url>http://89.39.83.106:8081/repository/maven-snapshots/</url>
+                </snapshotRepository>
+            </distributionManagement>
             <build>
                 <plugins>
                     <plugin>
@@ -209,9 +223,9 @@
 
     <repositories>
         <repository>
-            <id>marios-nexus</id>
-            <name>Nexus</name>
-            <url>http://89.39.83.106:8081/repository/maven-snapshots</url>
+            <id>github</id>
+            <name>GitHub Java Rest Client Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/dxworks/java-rest-client</url>
         </repository>
         <repository>
             <id>jcenter</id>
