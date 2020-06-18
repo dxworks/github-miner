@@ -11,12 +11,12 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class RepoExporterIT {
-	private final RepoExporter repoExporter = new RepoExporter("andrei2699", "Music-Events-Application", TestUtils.getGithubCredentials());
+class GithubRepoExporterIT {
+	private final GithubRepoExporter githubRepoExporter = new GithubRepoExporter("andrei2699", "Music-Events-Application", TestUtils.getGithubCredentials());
 
 	@Test
 	void export() throws IOException {
-		RemoteInfoDTO export = repoExporter.export();
+		RemoteInfoDTO export = githubRepoExporter.export();
 		assertNotNull(export);
 
 

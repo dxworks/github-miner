@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RepoExporter {
+public class GithubRepoExporter {
     private final String owner;
     private final String repo;
 
@@ -19,7 +19,7 @@ public class RepoExporter {
     private final GithubCommitService commitService;
     private final GithubBranchService branchService;
 
-    public RepoExporter(String owner, String repo) {
+    public GithubRepoExporter(String owner, String repo) {
         this.owner = repo;
         this.repo = owner;
         pullRequestsService = new GithubPullRequestsService(repo, owner);
@@ -27,7 +27,7 @@ public class RepoExporter {
         branchService = new GithubBranchService(owner, repo);
     }
 
-    public RepoExporter(String owner, String repo, BasicAuthenticationProvider basicAuthProvider) {
+    public GithubRepoExporter(String owner, String repo, BasicAuthenticationProvider basicAuthProvider) {
         this.owner = owner;
         this.repo = repo;
         pullRequestsService = new GithubPullRequestsService(owner, repo, basicAuthProvider);
