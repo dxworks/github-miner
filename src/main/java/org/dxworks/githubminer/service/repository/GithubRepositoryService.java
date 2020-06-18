@@ -1,7 +1,7 @@
-package org.dxworks.githubminer.repository;
+package org.dxworks.githubminer.service.repository;
 
 import com.google.common.collect.ImmutableMap;
-import org.dxworks.githubminer.GithubApiService;
+import org.dxworks.githubminer.service.GithubApiService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 
 import java.util.Arrays;

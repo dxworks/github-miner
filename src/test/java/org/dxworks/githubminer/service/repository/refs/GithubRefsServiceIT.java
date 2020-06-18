@@ -1,4 +1,4 @@
-package org.dxworks.githubminer.repository.refs;
+package org.dxworks.githubminer.service.repository.refs;
 
 import org.dxworks.githubminer.dto.response.repository.refs.Ref;
 import org.dxworks.githubminer.utils.TestUtils;

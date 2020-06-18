@@ -1,4 +1,4 @@
-package org.dxworks.githubminer.repository.actions.secrets;
+package org.dxworks.githubminer.service.repository.actions.secrets;
 
 import com.google.api.client.http.GenericUrl;
 import com.google.common.collect.ImmutableMap;
@@ -13,7 +13,7 @@ import org.dxworks.githubminer.dto.request.repository.actions.secrets.SecretRequ
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.Secret;
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.SecretsForRepo;
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.SecretsPublicKey;
-import org.dxworks.githubminer.repository.GithubRepositoryService;
+import org.dxworks.githubminer.service.repository.GithubRepositoryService;
 import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider;
 import org.dxworks.utils.java.rest.client.response.HttpResponse;
 
