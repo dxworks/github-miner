@@ -18,8 +18,16 @@ public class GithubBranchService extends GithubRepositoryService {
         super(owner, repo);
     }
 
+    public GithubBranchService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl, owner, repo);
+    }
+
     public GithubBranchService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(owner, repo, authenticationProvider);
+    }
+
+    public GithubBranchService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, owner, repo, authenticationProvider);
     }
 
     @SneakyThrows

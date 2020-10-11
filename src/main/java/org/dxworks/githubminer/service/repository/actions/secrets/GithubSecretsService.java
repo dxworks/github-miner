@@ -22,9 +22,20 @@ import java.util.List;
 @Slf4j
 public class GithubSecretsService extends GithubRepositoryService {
 
+    public GithubSecretsService(String owner, String repo) {
+        super(owner, repo);
+    }
+
+    public GithubSecretsService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl, owner, repo);
+    }
 
     public GithubSecretsService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(owner, repo, authenticationProvider);
+    }
+
+    public GithubSecretsService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, owner, repo, authenticationProvider);
     }
 
     @SneakyThrows

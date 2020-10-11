@@ -30,8 +30,16 @@ public class GithubPullRequestsService extends GithubRepositoryService {
         super(owner, repo);
     }
 
+    public GithubPullRequestsService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl, owner, repo);
+    }
+
     public GithubPullRequestsService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(owner, repo, authenticationProvider);
+    }
+
+    public GithubPullRequestsService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, owner, repo, authenticationProvider);
     }
 
     @SneakyThrows

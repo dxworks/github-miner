@@ -24,8 +24,24 @@ public class GithubRepositoryService extends GithubApiService {
         initMap(owner, repo);
     }
 
+    public GithubRepositoryService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl);
+        this.owner = owner;
+        this.repo = repo;
+
+        initMap(owner, repo);
+    }
+
     public GithubRepositoryService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(authenticationProvider);
+        this.owner = owner;
+        this.repo = repo;
+
+        initMap(owner, repo);
+    }
+
+    public GithubRepositoryService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, authenticationProvider);
         this.owner = owner;
         this.repo = repo;
 

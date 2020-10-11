@@ -1,6 +1,7 @@
 package org.dxworks.githubminer.service.invitations;
 
 import com.google.api.client.http.GenericUrl;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import lombok.SneakyThrows;
@@ -16,6 +17,18 @@ import java.util.List;
 public class GithubInvitationService extends GithubApiService {
     public GithubInvitationService() {
         super();
+    }
+
+    public GithubInvitationService(String githubRootUrl) {
+        super(githubRootUrl);
+    }
+
+    public GithubInvitationService(HttpRequestInitializer httpRequestInitializer) {
+        super(httpRequestInitializer);
+    }
+
+    public GithubInvitationService(String githubRootUrl, HttpRequestInitializer httpRequestInitializer) {
+        super(githubRootUrl, httpRequestInitializer);
     }
 
     public GithubInvitationService(BasicAuthenticationProvider authenticationProvider) {

@@ -12,12 +12,21 @@ import java.util.List;
 public class GithubCommitService extends GithubRepositoryService {
     private static final Type COMMIT_LIST_TYPE = new TypeToken<List<RepoCommit>>() {
     }.getType();
+
     public GithubCommitService(String owner, String repo) {
         super(owner, repo);
     }
 
+    public GithubCommitService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl, owner, repo);
+    }
+
     public GithubCommitService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(owner, repo, authenticationProvider);
+    }
+
+    public GithubCommitService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, owner, repo, authenticationProvider);
     }
 
     public List<RepoCommit> getAllCommits() {

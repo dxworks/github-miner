@@ -15,8 +15,16 @@ public class GithubRefsService extends GithubRepositoryService {
         super(owner, repo);
     }
 
+    public GithubRefsService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl, owner, repo);
+    }
+
     public GithubRefsService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(owner, repo, authenticationProvider);
+    }
+
+    public GithubRefsService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, owner, repo, authenticationProvider);
     }
 
     @SneakyThrows

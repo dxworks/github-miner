@@ -13,8 +13,16 @@ public class GithubContentsService extends GithubRepositoryService {
         super(owner, repo);
     }
 
+    public GithubContentsService(String githubRootUrl, String owner, String repo) {
+        super(githubRootUrl, owner, repo);
+    }
+
     public GithubContentsService(String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
         super(owner, repo, authenticationProvider);
+    }
+
+    public GithubContentsService(String githubRootUrl, String owner, String repo, BasicAuthenticationProvider authenticationProvider) {
+        super(githubRootUrl, owner, repo, authenticationProvider);
     }
 
     public boolean addFileToRepo(String path, CreateFileRequestBody body) {

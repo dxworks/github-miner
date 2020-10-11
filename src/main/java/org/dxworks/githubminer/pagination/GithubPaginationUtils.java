@@ -19,8 +19,16 @@ public class GithubPaginationUtils extends GithubApiService {
     public GithubPaginationUtils() {
     }
 
+    public GithubPaginationUtils(String githubRootUrl) {
+        super(githubRootUrl);
+    }
+
     public GithubPaginationUtils(HttpRequestInitializer httpRequestInitializer) {
         super(httpRequestInitializer);
+    }
+
+    public GithubPaginationUtils(String githubRootUrl, HttpRequestInitializer httpRequestInitializer) {
+        super(githubRootUrl, httpRequestInitializer);
     }
 
     @SneakyThrows
