@@ -1,22 +1,16 @@
-package org.dxworks.githubminer.service.repository.branches;
+package org.dxworks.githubminer.service.repository.branches
 
-import org.dxworks.githubminer.dto.response.repository.branches.Branch;
-import org.dxworks.githubminer.utils.TestUtils;
-import org.junit.jupiter.api.Test;
+import org.dxworks.githubminer.dto.response.repository.branches.Branch
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-class GithubBranchServiceIT {
-
-    private GithubBranchService githubBranchService = new GithubBranchService("MarioRivis", "SimpleRegistrationExample", TestUtils.getGithubCredentials());
+internal class GithubBranchServiceIT {
+    private val githubBranchService = GithubBranchService("apache", "kafka")
 
     @Test
-    void tetGetAllBranches() {
-        List<Branch> allCommits = githubBranchService.getAllBranches();
-        assertTrue(allCommits.stream().allMatch(repoCommit -> repoCommit instanceof Branch));
-        assertEquals(8, allCommits.size());
+    fun tetGetAllBranches() {
+        val allCommits = githubBranchService.allBranches
+        Assertions.assertTrue(allCommits.stream().allMatch { repoCommit: Branch? -> repoCommit is Branch })
+        Assertions.assertEquals(9, allCommits.size)
     }
 }

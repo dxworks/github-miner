@@ -1,26 +1,20 @@
-package org.dxworks.githubminer;
+package org.dxworks.githubminer
 
-import org.dxworks.githubminer.dto.export.RemoteInfoDTO;
-import org.dxworks.githubminer.utils.TestUtils;
-import org.dxworks.utils.java.rest.client.utils.JsonMapper;
-import org.junit.jupiter.api.Test;
+import org.dxworks.utils.java.rest.client.utils.JsonMapper
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
+import java.io.IOException
+import java.nio.charset.Charset
+import java.nio.file.Paths
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
+internal class GithubRepoExporterIT {
+    private val githubRepoExporter = GithubRepoExporter("andrei2699", "Music-Events-Application")
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-class GithubRepoExporterIT {
-	private final GithubRepoExporter githubRepoExporter = new GithubRepoExporter("andrei2699", "Music-Events-Application", TestUtils.getGithubCredentials());
-
-	@Test
-	void export() throws IOException {
-		RemoteInfoDTO export = githubRepoExporter.export();
-		assertNotNull(export);
-
-
-		File file = Paths.get("../remote-export.json").toFile();
-		new JsonMapper().writePrettyJSONtoFile(file, export);
-	}
+    @Test
+    fun export() {
+        val export = githubRepoExporter.export()
+        Assertions.assertNotNull(export)
+        val file = Paths.get("../remote-export.json").toFile()
+        JsonMapper().writePrettyJSONtoFile(file, export, Charset.defaultCharset())
+    }
 }

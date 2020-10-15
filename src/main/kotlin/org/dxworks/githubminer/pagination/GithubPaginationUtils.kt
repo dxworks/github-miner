@@ -1,0 +1,40 @@
+package org.dxworks.githubminer.pagination
+
+import com.google.api.client.http.GenericUrl
+import org.dxworks.githubminer.constants.ANONYMOUS
+import org.dxworks.githubminer.constants.GITHUB_API_PATH
+import org.dxworks.githubminer.http.GithubHttpResponse
+import org.dxworks.githubminer.service.GithubApiService
+import org.slf4j.LoggerFactory
+import java.lang.reflect.Type
+import java.util.*
+
+class GithubPaginationUtils(githubBasePath: String = GITHUB_API_PATH,
+                            githubTokens: List<String> = listOf(ANONYMOUS))
+    : GithubApiService(githubBasePath, githubTokens) {
+
+    fun <T> getAllElements(firstUrl: GenericUrl, type: Type?): List<T> {
+        var httpResponse = getHttpResponse(firstUrl)
+        val elements: MutableList<T> = ArrayList()
+        while (hasNextPageLink(httpResponse)) {
+            elements.addAll(httpResponse.parseAs(type) as Collection<T>)
+            val genericUrl = GenericUrl(httpResponse.pageLinks.next)
+            httpResponse = getHttpResponse(genericUrl)
+        }
+        elements.addAll(httpResponse.parseAs(type) as Collection<T>)
+        return elements
+    }
+
+    private fun getHttpResponse(genericUrl: GenericUrl): GithubHttpResponse {
+        log.info("Retrieving $genericUrl")
+        return GithubHttpResponse(httpClient.get(genericUrl))
+    }
+
+    private fun hasNextPageLink(httpResponse: GithubHttpResponse?): Boolean {
+        return httpResponse != null && httpResponse.pageLinks.next?.isNotBlank() ?: false
+    }
+
+    companion object {
+        private val log = LoggerFactory.getLogger(GithubPaginationUtils::class.java)
+    }
+}
