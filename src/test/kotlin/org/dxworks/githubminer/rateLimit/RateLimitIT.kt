@@ -10,7 +10,6 @@ class RateLimitIT{
         val githubApiService = TestGithubApiService("http://localhost:4004", listOf("aaa", "bbb", "ccc", "abc", "bcd", "asd"))
 
         for (i in 0 until 100) {
-            Thread.sleep(1000)
             githubApiService.randomRequest()
         }
     }

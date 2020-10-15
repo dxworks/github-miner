@@ -30,7 +30,8 @@
 
     <properties>
         <jar.final.name>githubminer</jar.final.name>
-        <main.class>org.dxworks.githubminer.Main</main.class>
+        <main.class>org.dxworks.githubminer.MainKt</main.class>
+        <kotlin.version>1.4.10</kotlin.version>
     </properties>
 
     <build>
@@ -38,12 +39,27 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
-                <version>3.8.1</version>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-compile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <source>14</source>
-                    <target>14</target>
+                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
             </plugin>
             <plugin>
@@ -140,6 +156,11 @@
             <artifactId>jna</artifactId>
             <version>5.5.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.dxworks</groupId>
+            <artifactId>argumenthor</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -157,9 +178,14 @@
 
     <repositories>
         <repository>
-            <id>github</id>
+            <id>github-java-rest-client</id>
             <name>GitHub Java Rest Client Apache Maven Packages</name>
             <url>https://maven.pkg.github.com/dxworks/java-rest-client</url>
+        </repository>
+        <repository>
+            <id>github-argumenthor</id>
+            <name>GitHub Argumenthor Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/dxworks/argumenthor</url>
         </repository>
         <repository>
             <id>jcenter</id>

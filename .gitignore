@@ -2,5 +2,5 @@
 .idea
 *.iml
 target
-config
+/config
 results

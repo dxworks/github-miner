@@ -31,10 +31,10 @@ class GithubRepoExporter {
     }
 
     fun export(): RemoteInfoDTO {
-        return RemoteInfoDTO().apply {
-            branches = branches
-            commitInfos = commits
-            pullRequests = pullRequests
+        return RemoteInfoDTO().also {
+            it.branches = branches
+            it.commitInfos = commits
+            it.pullRequests = pullRequests
         }
     }
 
@@ -50,7 +50,7 @@ class GithubRepoExporter {
     }
 
     private fun addPrReviews(pullRequestDTO: PullRequestDTO) {
-        pullRequestDTO.reviews = pullRequestsService.getPullRequestReviews(pullRequestDTO.number)
+        pullRequestDTO.reviews = pullRequestsService.getPullRequestReviews(pullRequestDTO.number!!)
                 .mapNotNull(PullRequestReviewDTO.Companion::fromPullRequestReview)
     }
 
@@ -59,7 +59,7 @@ class GithubRepoExporter {
     }
 
     private fun addPrCommits(pullRequestDTO: PullRequestDTO) {
-        pullRequestDTO.commits = pullRequestsService.getPullRequestCommits(pullRequestDTO.number)
+        pullRequestDTO.commits = pullRequestsService.getPullRequestCommits(pullRequestDTO.number!!)
                 .mapNotNull { it.sha }
     }
 

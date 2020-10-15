@@ -81,7 +81,7 @@ internal class GithubPullRequestsServiceIT {
 
     @Test
     fun pullRequestCommitsSha() {
-        Assertions.assertEquals("ec44981f2b7ee9e4191bd3d91679cb8a000e1466", service.getPullRequestCommits(pullRequests!![pullRequests!!.size - 1]!!.number)[0].sha)
+        Assertions.assertEquals("ec44981f2b7ee9e4191bd3d91679cb8a000e1466", service.getPullRequestCommits(pullRequests!![pullRequests!!.size - 1]!!.number!!)[0].sha)
         Assertions.assertEquals("c5eae64bb0e14c1852fd0dca686d3ddcbb47b3fa", service.getPullRequestCommits(pullRequests!![pullRequests!!.size - 1]!!)[1].sha)
     }
 

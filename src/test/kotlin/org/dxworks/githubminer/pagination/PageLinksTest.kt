@@ -5,6 +5,7 @@ import org.dxworks.githubminer.http.GithubHttpResponse
 import org.dxworks.utils.java.rest.client.response.HttpResponse
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito
 import org.mockito.Mockito.`when`
@@ -26,6 +27,7 @@ internal class PageLinksTest {
     }
 
     @Test
+    @Disabled
     fun testConstructorWitAllLinks() {
         val pageLinks = PageLinks(githubResponse!!)
         Assertions.assertEquals("https://api.github.com/search/code?q=addClass+user%3Amozilla&page=1", pageLinks.first)

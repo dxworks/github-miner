@@ -31,7 +31,7 @@ class GithubPullRequestsService(
         get() {
             val pullRequestUrl = PullRequestUrl(getApiPath("pulls"), "all")
             return paginationUtils.getAllElements<PullRequest>(pullRequestUrl, PULL_REQUESTS_LIST_TYPE).stream()
-                    .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number) }
+                    .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
                     .collect(Collectors.toList())
         }
 
@@ -43,7 +43,7 @@ class GithubPullRequestsService(
     }
 
     fun getPullRequestCommits(pullRequest: PullRequest): List<RepoCommit> {
-        return getPullRequestCommits(pullRequest.number)
+        return getPullRequestCommits(pullRequest.number!!)
     }
 
     fun getPullRequestCommits(pullRequestNumber: Long): List<RepoCommit> {
@@ -53,7 +53,7 @@ class GithubPullRequestsService(
     }
 
     fun getPullRequestReviews(pullRequest: PullRequest): List<PullRequestReview> {
-        return getPullRequestReviews(pullRequest.number)
+        return getPullRequestReviews(pullRequest.number!!)
     }
 
     fun getPullRequestReviews(pullRequestNumber: Long): List<PullRequestReview> {

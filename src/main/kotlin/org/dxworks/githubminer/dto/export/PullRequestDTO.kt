@@ -9,7 +9,7 @@ class PullRequestDTO (
     var id: Long? = null,
 
     @Key
-    var number: Long,
+    var number: Long? = null,
 
     @Key
     var title: String? = null,
