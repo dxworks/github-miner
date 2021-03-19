@@ -16,6 +16,13 @@ internal class PageLinksTest {
 
     @BeforeEach
     fun setUp() {
+        print("in setup")
+        print("in setup")
+        print("in setup")
+        print("in setup")
+        print("in setup")
+        print("in setup")
+        print("in setup")
         val headers = HttpHeaders()
         headers[PageLinks.HEADER_LINK] = """<https://api.github.com/search/code?q=addClass+user%3Amozilla&page=15>; rel="next",
   <https://api.github.com/search/code?q=addClass+user%3Amozilla&page=34>; rel="last",
@@ -24,11 +31,11 @@ internal class PageLinksTest {
         val response = mock(com.google.api.client.http.HttpResponse::class.java)
         `when`(response.headers).thenReturn(headers)
         githubResponse = GithubHttpResponse(HttpResponse(response))
+        print(githubResponse)
     }
 
     @Test
-    @Disabled
-    fun testConstructorWitAllLinks() {
+    fun testConstructorWithAllLinks() {
         val pageLinks = PageLinks(githubResponse!!)
         Assertions.assertEquals("https://api.github.com/search/code?q=addClass+user%3Amozilla&page=1", pageLinks.first)
         Assertions.assertEquals("https://api.github.com/search/code?q=addClass+user%3Amozilla&page=34", pageLinks.last)
