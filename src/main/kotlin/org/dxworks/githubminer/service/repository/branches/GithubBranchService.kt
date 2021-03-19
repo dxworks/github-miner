@@ -17,7 +17,7 @@ class GithubBranchService(
     val allBranches: List<Branch?>
         get() {
             val commitsUrl = GenericUrl(getApiPath("branches"))
-            return paginationUtils.getAllElements<Branch>(commitsUrl, BRANCH_LIST_TYPE)
+            return paginationUtils.getAllElements(commitsUrl) { it.parseAs(BRANCH_LIST_TYPE) as List<Branch> }
         }
 
     companion object {

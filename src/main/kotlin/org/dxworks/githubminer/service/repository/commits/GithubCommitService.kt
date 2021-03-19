@@ -17,7 +17,7 @@ class GithubCommitService(
     val allCommits: List<RepoCommit?>
         get() {
             val commitsUrl = GenericUrl(getApiPath("commits"))
-            return paginationUtils.getAllElements<RepoCommit>(commitsUrl, COMMIT_LIST_TYPE)
+            return paginationUtils.getAllElements(commitsUrl) { it.parseAs(COMMIT_LIST_TYPE) as List<RepoCommit> }
         }
 
     companion object {

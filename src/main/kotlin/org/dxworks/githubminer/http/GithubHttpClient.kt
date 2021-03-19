@@ -57,8 +57,6 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
                     return
                 }
                 throw e
-            } finally {
-                response?.response?.content?.close()
             }
         }
     }
@@ -114,7 +112,7 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
 
     companion object {
         private val tokenRateLimits: MutableMap<String, RateLimit> = HashMap()
-        private val defaultHttpRequestInitializer = HttpRequestInitializer { it.readTimeout = 60000 }
+        private val defaultHttpRequestInitializer = HttpRequestInitializer { it.readTimeout = 5000 }
         private val log = LoggerFactory.getLogger(GithubHttpClient::class.java)
     }
 }

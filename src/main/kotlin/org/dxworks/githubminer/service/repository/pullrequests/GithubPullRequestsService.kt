@@ -10,9 +10,7 @@ import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequestReview
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
-import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider
 import org.slf4j.LoggerFactory
-import java.util.stream.Collectors
 
 class GithubPullRequestsService(
         owner: String,
@@ -30,9 +28,9 @@ class GithubPullRequestsService(
     val allPullRequests: List<PullRequest?>
         get() {
             val pullRequestUrl = PullRequestUrl(getApiPath("pulls"), "all")
-            return paginationUtils.getAllElements<PullRequest>(pullRequestUrl, PULL_REQUESTS_LIST_TYPE).stream()
+            return paginationUtils.getAllElements(pullRequestUrl) { it.parseAs(PULL_REQUESTS_LIST_TYPE) as List<PullRequest> }
                     .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
-                    .collect(Collectors.toList())
+                    .toList()
         }
 
     fun getPullRequest(pullRequestNumber: Long): PullRequest {
@@ -49,7 +47,7 @@ class GithubPullRequestsService(
     fun getPullRequestCommits(pullRequestNumber: Long): List<RepoCommit> {
         val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "commits")
         val pullRequestCommitsUrl = GenericUrl(apiPath)
-        return paginationUtils.getAllElements(pullRequestCommitsUrl, PULL_REQUESTS_COMMITS_LIST_TYPE)
+        return paginationUtils.getAllElements(pullRequestCommitsUrl) { it.parseAs(PULL_REQUESTS_COMMITS_LIST_TYPE) as List<RepoCommit> }
     }
 
     fun getPullRequestReviews(pullRequest: PullRequest): List<PullRequestReview> {
@@ -59,7 +57,7 @@ class GithubPullRequestsService(
     fun getPullRequestReviews(pullRequestNumber: Long): List<PullRequestReview> {
         val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "reviews")
         val pullRequestReviewsUrl = GenericUrl(apiPath)
-        return paginationUtils.getAllElements(pullRequestReviewsUrl, PULL_REQUESTS_REVIEW_LIST_TYPE)
+        return paginationUtils.getAllElements(pullRequestReviewsUrl) { it.parseAs(PULL_REQUESTS_REVIEW_LIST_TYPE) as List<PullRequestReview> }
     }
 
     companion object {

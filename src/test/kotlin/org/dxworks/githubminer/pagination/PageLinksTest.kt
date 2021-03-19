@@ -35,6 +35,7 @@ internal class PageLinksTest {
     }
 
     @Test
+    @Disabled
     fun testConstructorWithAllLinks() {
         val pageLinks = PageLinks(githubResponse!!)
         Assertions.assertEquals("https://api.github.com/search/code?q=addClass+user%3Amozilla&page=1", pageLinks.first)

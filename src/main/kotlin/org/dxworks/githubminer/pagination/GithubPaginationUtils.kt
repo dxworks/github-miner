@@ -13,15 +13,15 @@ class GithubPaginationUtils(githubBasePath: String = GITHUB_API_PATH,
                             githubTokens: List<String> = listOf(ANONYMOUS))
     : GithubApiService(githubBasePath, githubTokens) {
 
-    fun <T> getAllElements(firstUrl: GenericUrl, type: Type?): List<T> {
+    fun <T> getAllElements(firstUrl: GenericUrl, responseParser: (GithubHttpResponse) -> List<T>): List<T> {
         var httpResponse = getHttpResponse(firstUrl)
         val elements: MutableList<T> = ArrayList()
         while (hasNextPageLink(httpResponse)) {
-            elements.addAll(httpResponse.parseAs(type) as Collection<T>)
+            elements.addAll(responseParser(httpResponse))
             val genericUrl = GenericUrl(httpResponse.pageLinks.next)
             httpResponse = getHttpResponse(genericUrl)
         }
-        elements.addAll(httpResponse.parseAs(type) as Collection<T>)
+        elements.addAll(responseParser(httpResponse))
         return elements
     }
 
