@@ -17,6 +17,10 @@ object TestUtils {
         properties!!.load(FileInputStream(Paths.get("config", "test.properties").toFile()))
     }
 
+    init {
+        loadProperties()
+    }
+
     val githubCredentials: List<String>
         get() = properties?.entries?.filter { (it.key as String).startsWith("test.github.token") }?.map { it.value as String }
                 ?: listOf(ANONYMOUS)

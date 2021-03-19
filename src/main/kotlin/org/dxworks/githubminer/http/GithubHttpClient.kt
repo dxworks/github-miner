@@ -73,7 +73,7 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
     private fun tryPerformRequestConsideringRateLimit(doRequest: (token: String) -> GithubHttpResponse): GithubHttpResponse {
         while (true) {
             val activeTokens = retrieveActiveTokens()
-            var response:GithubHttpResponse? = null
+            var response: GithubHttpResponse?
             if (activeTokens.isEmpty()) {
                 waitUntilSoonestRateLimitReset()
             } else {
@@ -84,11 +84,10 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
                     }
                     return response
                 } catch (e: HttpResponseException) {
-                    if (rateLimitExceeded(e)) tokenRateLimits[usedToken] = GithubHttpResponse(super.get(GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
-                            GithubBearerAuthenticationProvider(usedToken))).rateLimit
+                    if (rateLimitExceeded(e))
+                        tokenRateLimits[usedToken] = GithubHttpResponse(super.get(GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
+                                GithubBearerAuthenticationProvider(usedToken))).rateLimit
                     else throw e
-                } finally {
-                    response?.response?.content?.close()
                 }
             }
         }
@@ -115,7 +114,7 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
 
     companion object {
         private val tokenRateLimits: MutableMap<String, RateLimit> = HashMap()
-        private val defaultHttpRequestInitializer = HttpRequestInitializer { it.readTimeout = 5000 }
+        private val defaultHttpRequestInitializer = HttpRequestInitializer { it.readTimeout = 60000 }
         private val log = LoggerFactory.getLogger(GithubHttpClient::class.java)
     }
 }

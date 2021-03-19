@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 internal class GithubPullRequestsServiceIT {
     @Test
     fun testGetAllPullRequests() {
-        Assertions.assertEquals(144, pullRequests!!.size)
+        Assertions.assertEquals(166, pullRequests!!.size)
     }
 
     @Test
@@ -96,6 +96,7 @@ internal class GithubPullRequestsServiceIT {
         private var pullRequests: List<PullRequest?>? = null
 
         @BeforeAll
+        @JvmStatic
         fun setUpAll() {
             pullRequests = service.allPullRequests
         }

@@ -6,7 +6,7 @@
 
     <groupId>org.dxworks</groupId>
     <artifactId>github-miner</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.3-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -31,7 +31,7 @@
     <properties>
         <jar.final.name>githubminer</jar.final.name>
         <main.class>org.dxworks.githubminer.MainKt</main.class>
-        <kotlin.version>1.4.10</kotlin.version>
+        <kotlin.version>1.4.31</kotlin.version>
     </properties>
 
     <build>
@@ -117,6 +117,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test</artifactId>
+            <version>${kotlin.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.dxworks.utils</groupId>
             <artifactId>java-rest-client</artifactId>
             <version>2.0.0-SNAPSHOT</version>
@@ -159,7 +170,7 @@
         <dependency>
             <groupId>org.dxworks</groupId>
             <artifactId>argumenthor</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>
@@ -177,16 +188,6 @@
     </dependencies>
 
     <repositories>
-        <repository>
-            <id>github-java-rest-client</id>
-            <name>GitHub Java Rest Client Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/dxworks/java-rest-client</url>
-        </repository>
-        <repository>
-            <id>github-argumenthor</id>
-            <name>GitHub Argumenthor Apache Maven Packages</name>
-            <url>https://maven.pkg.github.com/dxworks/argumenthor</url>
-        </repository>
         <repository>
             <id>jcenter</id>
             <url>https://jcenter.bintray.com/</url>

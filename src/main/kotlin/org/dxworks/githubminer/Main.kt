@@ -24,7 +24,7 @@ fun main(args: Array<String>) {
             RepoListField(GITHUB_REPOS, emptyList()),
             StringListField(GITHUB_TOKENS, listOf(ANONYMOUS))
     )).apply {
-        addSource(ArgsSource().also { it.args = args })
+        addSource(ArgsSource().also { it.argsList = args.toList() })
         addSource(PropertiesSource().also { it.path = "github-miner.properties" })
         addSource(EnvSource())
     })
