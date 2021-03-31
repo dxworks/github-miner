@@ -28,4 +28,4 @@ A comma separated list of [Personal Access Tokens](https://docs.github.com/en/fr
 A comma separated list of repositories, in the for `owner/repo`, For example, for the Kafka and Spring Framework repository, the value would be: `apache/kafka,spring-projects/spring-framework`
 
 ## Run
-Run GithubMiner using the `githubminer.bat` or `githubminer.sh` script, with no parameters. When GithubMiner finishes it will generate a JSON file, placed in the “results” sub-folder, for each of the repositories given as parameters. The name of the files are ABC-prs.json, whereby ABC is the repository name.
+Run GithubMiner using the `githubminer.bat` or `githubminer.sh` script, with no parameters. When GithubMiner finishes it will generate a JSON file, placed in the “results” sub-folder, for each of the repositories given as parameters. The name of the files are `ABC-prs.json`, whereby `ABC` is the repository name.
