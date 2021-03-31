@@ -6,7 +6,7 @@ This app also contains a Kotlin library for using the Github REST API.
 Visit us on [Github](https://github.com/dxworks/github-miner).
 
 ## Download
-Please download our [latest release](https://github.com/dxworks/github-miner/releases) from Github and unzip the folder. 
+Please download the `github-miner.zip` file from our [latest release](https://github.com/dxworks/github-miner/releases) from Github and unzip the folder. 
 The contents of the folder are as follows:
 * `githubminer.jar` (executable jar file)
 * `githubminer.sh` (executable file for linux / macOS)
