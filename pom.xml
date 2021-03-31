@@ -6,7 +6,7 @@
 
     <groupId>org.dxworks</groupId>
     <artifactId>github-miner</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
 
     <licenses>
         <license>
@@ -39,7 +39,6 @@
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
         <plugins>
             <plugin>
-                <!-- For more, refer https://maven.apache.org/surefire/maven-surefire-plugin/ -->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M3</version>
@@ -101,27 +100,6 @@
         </plugins>
     </build>
 
-    <profiles>
-        <profile>
-            <id>github-default</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <distributionManagement>
-                <repository>
-                    <id>github</id>
-                    <name>GitHub dxworks Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/dxworks/github-miner</url>
-                </repository>
-                <snapshotRepository>
-                    <id>github</id>
-                    <name>GitHub dxworks Apache Maven Packages</name>
-                    <url>https://maven.pkg.github.com/dxworks/github-miner</url>
-                </snapshotRepository>
-            </distributionManagement>
-        </profile>
-    </profiles>
-
     <dependencies>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -162,7 +140,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>29.0-jre</version>
+            <version>30.0-jre</version>
         </dependency>
         <dependency>
             <groupId>com.goterl.lazycode</groupId>
