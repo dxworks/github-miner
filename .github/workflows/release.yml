@@ -20,7 +20,7 @@ jobs:
           mkdir github-miner/results
           mkdir github-miner/config
           cp README.md github-miner/README.md
-          cp target/githubminer.jar github-miner/githubminer.jar
+          cp github-miner-app/target/githubminer.jar github-miner/githubminer.jar
           cp bin/githubminer.bat github-miner/githubminer.bat
           cp bin/githubminer.sh github-miner/githubminer.sh
           cp github-miner.properties github-miner/config/github-miner.properties
