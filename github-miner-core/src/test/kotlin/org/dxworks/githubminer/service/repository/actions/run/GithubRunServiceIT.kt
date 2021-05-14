@@ -23,10 +23,12 @@ internal class GithubRunServiceIT {
         val run = githubRunService.getAllRuns().first()
 
         assertEquals(569114191, run.id)
-        assertEquals("Build", run.name)
+        assertEquals("Build #86", run.name)
+        assertEquals("Build", run.parentName)
         assertEquals("push", run.event)
         assertEquals("success", run.conclusion)
         assertEquals(146, run.duration)
+        assertEquals("2021-02-15T16:28:51Z", run.startedAt)
         assertEquals("fc7acca2fe8b5d698a6a228de72ca7fecf880787", run.commitId)
         assertEquals("testExtension", run.branch)
         assertEquals("https://api.github.com/repos/cadeca/weasylearn-be/actions/runs/569114191", run.url)

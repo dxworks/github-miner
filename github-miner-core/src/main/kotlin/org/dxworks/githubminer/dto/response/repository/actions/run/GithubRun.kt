@@ -1,6 +1,7 @@
 package org.dxworks.githubminer.dto.response.repository.actions.run
 
 import com.google.api.client.json.GenericJson
+import com.google.api.client.util.ArrayMap
 import com.google.api.client.util.Key
 import java.time.Duration
 import java.time.LocalDateTime
@@ -11,7 +12,12 @@ class GithubRun : GenericJson() {
     var id: Int = -1
 
     @Key("name")
-    var name: String? = null
+    var parentName: String? = null
+
+    @Key("run_number")
+    var run_number: Number? = 0
+
+    val name: String by lazy { "$parentName #$run_number" }
 
     @Key("event")
     var event: String? = null
@@ -24,10 +30,13 @@ class GithubRun : GenericJson() {
             LocalDateTime.parse(completedAt as CharSequence?, DateTimeFormatter.ISO_OFFSET_DATE_TIME)).getSeconds();
     }
 
+    @Key("head_commit")
+    var head_commit: Map<String, Any>? = null
+
     @Key("created_at")
-    private var startedAt: String? = null
+    var startedAt: String? = null
     @Key("updated_at")
-    private var completedAt: String? = null
+    var completedAt: String? = null
 
     @Key("head_sha")
     var commitId: String? = null
@@ -39,6 +48,4 @@ class GithubRun : GenericJson() {
     var url: String? = null
 
     var jobs: List<GithubJob> = emptyList()
-
-    override fun toString(): String = " $id: duration : $duration \n"
 }
