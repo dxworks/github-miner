@@ -7,7 +7,7 @@ import org.dxworks.githubminer.service.GithubApiService
 import java.util.*
 
 open class GithubRepositoryService(protected var owner: String,
-                                   protected var repo: String,
+                                   var repo: String,
                                    githubBasePath: String = GITHUB_API_PATH,
                                    githubTokens: List<String> = listOf(ANONYMOUS)
 ) : GithubApiService(githubBasePath, githubTokens) {
@@ -16,11 +16,12 @@ open class GithubRepositoryService(protected var owner: String,
 
     override fun getApiPath(variablesValues: Map<String, String>, vararg pathVariables: String): String {
         val newMap: MutableMap<String, String> = HashMap(variablesValues)
-        newMap.putAll(map)
+        newMap["repo"] = repo
+        newMap["owner"] = owner
         return super.getApiPath(newMap, *(arrayOf("repos", ":owner", ":repo") + pathVariables))
     }
 
     override fun getApiPath(vararg pathVariables: String): String {
-        return super.getApiPath(map, *(arrayOf("repos", ":owner", ":repo") + pathVariables))
+        return super.getApiPath(ImmutableMap.of("repo", repo, "owner", owner), *(arrayOf("repos", ":owner", ":repo") + pathVariables))
     }
 }

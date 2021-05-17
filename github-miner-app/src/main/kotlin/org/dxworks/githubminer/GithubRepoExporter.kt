@@ -8,8 +8,8 @@ import org.dxworks.githubminer.service.repository.commits.GithubCommitService
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService
 
 class GithubRepoExporter {
-    private val owner: String
-    private val repo: String
+    var owner: String
+    var repo: String
     private val pullRequestsService: GithubPullRequestsService
     private val commitService: GithubCommitService
     private val branchService: GithubBranchService
@@ -17,7 +17,7 @@ class GithubRepoExporter {
     constructor(owner: String, repo: String) {
         this.owner = repo
         this.repo = owner
-        pullRequestsService = GithubPullRequestsService(repo, owner)
+        pullRequestsService = GithubPullRequestsService(owner, repo)
         commitService = GithubCommitService(owner, repo)
         branchService = GithubBranchService(owner, repo)
     }
@@ -70,4 +70,11 @@ class GithubRepoExporter {
     private val branches: List<BranchDTO>
         private get() = branchService.allBranches
                 .mapNotNull(BranchDTO.Companion::fromBranch)
+
+    public fun setTheRepo(repo: String) {
+        this.repo = repo
+        this.branchService.repo = repo
+        this.commitService.repo = repo
+        this.pullRequestsService.repo = repo
+    }
 }

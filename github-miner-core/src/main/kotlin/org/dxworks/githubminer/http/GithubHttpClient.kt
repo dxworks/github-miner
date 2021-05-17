@@ -45,7 +45,7 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
     }
 
     private fun getTokenRateLimits() {
-        var response: GithubHttpResponse? = null
+        var response: GithubHttpResponse?
         for (token in githubTokens) {
             try {
                 response = GithubHttpResponse(super.get(GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
