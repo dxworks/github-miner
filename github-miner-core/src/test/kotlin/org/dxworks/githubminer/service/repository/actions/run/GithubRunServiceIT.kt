@@ -35,4 +35,10 @@ internal class GithubRunServiceIT {
         assertEquals(1, run.jobs.size)
 
     }
+
+    @Test
+    fun get() {
+        val allRuns = GithubRunService("dxworks", "inspector-git", githubTokens = githubCredentials).getAllRuns()
+        assertNotNull(allRuns)
+    }
 }

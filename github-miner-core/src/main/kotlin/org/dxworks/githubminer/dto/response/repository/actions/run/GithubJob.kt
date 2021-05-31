@@ -11,7 +11,7 @@ import java.util.*
 
 class GithubJob: GenericJson() {
     @Key("id")
-    var id: Int = -1
+    var id: Number = -1
 
     @Key("name")
     var name: String? = null
