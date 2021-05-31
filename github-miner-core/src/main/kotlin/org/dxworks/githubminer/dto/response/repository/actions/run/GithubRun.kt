@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 
 class GithubRun : GenericJson() {
     @Key("id")
-    var id: Int = -1
+    var id: Number = -1
 
     @Key("name")
     var parentName: String? = null
