@@ -18,7 +18,7 @@ class GithubRunService(
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
 
     fun getAllRuns(): List<GithubRun> =
-            paginationUtils.getAllElements<GithubRun>(GenericUrl(getApiPath("actions", "runs"))) {
+            paginationUtils.getAllElements(GenericUrl(getApiPath("actions", "runs"))) {
                 it.parseAs(GithubRunsResponseDTO::class.java).runs
             }.onEach {
                 it.jobs = getJobs(it.id)
