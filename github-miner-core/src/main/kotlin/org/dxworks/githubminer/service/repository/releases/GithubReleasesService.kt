@@ -29,7 +29,8 @@ class GithubReleasesService(
 
     fun downloadReleaseAsset(tagName: String, assetName: String): ZipInputStream {
         // Cannot use getApiPath because the request is on github base path (not the api one)
-        val response = httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}"))
+        val response =
+            httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}"))
         return ZipInputStream(response.content)
     }
 

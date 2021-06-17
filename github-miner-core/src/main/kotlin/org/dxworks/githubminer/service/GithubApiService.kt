@@ -8,11 +8,17 @@ import org.dxworks.githubminer.pagination.GithubPaginationUtils
 import org.dxworks.utils.java.rest.client.RestClient
 
 open class GithubApiService(
-        private val githubBasePath: String = GITHUB_API_PATH,
-        private val githubTokens: List<String> = listOf(ANONYMOUS)
+    private val githubBasePath: String = GITHUB_API_PATH,
+    private val githubTokens: List<String> = listOf(ANONYMOUS)
 ) : RestClient(githubBasePath, GithubHttpClient(githubTokens, computeGithubBasePath(githubBasePath))) {
 
-    protected val paginationUtils: GithubPaginationUtils by lazy { GithubPaginationUtils(computeGithubBasePath(githubBasePath), githubTokens) }
+    protected val paginationUtils: GithubPaginationUtils by lazy {
+        GithubPaginationUtils(
+            computeGithubBasePath(
+                githubBasePath
+            ), githubTokens
+        )
+    }
 
     companion object {
         private fun computeGithubBasePath(githubBasePath: String): String {
@@ -24,5 +30,3 @@ open class GithubApiService(
         }
     }
 }
-
-
