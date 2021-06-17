@@ -9,8 +9,6 @@ import org.dxworks.githubminer.dto.response.repository.Release
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService
 import org.slf4j.LoggerFactory
-import java.net.HttpURLConnection
-import java.net.URL
 import java.util.zip.ZipInputStream
 
 
@@ -30,11 +28,9 @@ class GithubReleasesService(
     }
 
     fun downloadReleaseAsset(tagName: String, assetName: String): ZipInputStream {
-        val url = URL("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}")
-        val inputStream = (url.openConnection() as HttpURLConnection)
-            .apply { requestMethod = "GET" }
-            .inputStream
-        return ZipInputStream(inputStream)
+        // Cannot use getApiPath because the request is on github base path (not the api one)
+        val response = httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}"))
+        return ZipInputStream(response.content)
     }
 
     companion object {

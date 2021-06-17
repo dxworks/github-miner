@@ -1,8 +1,8 @@
 package org.dxworks.githubminer.service.repository.source
 
+import com.google.api.client.http.GenericUrl
 import org.dxworks.githubminer.constants.GITHUB_PATH
-import java.net.HttpURLConnection
-import java.net.URL
+import org.dxworks.utils.java.rest.client.HttpClient
 import java.util.zip.ZipInputStream
 
 class GithubSourceCodeService(
@@ -10,11 +10,8 @@ class GithubSourceCodeService(
     val repo: String,
     val githubBasePath: String = GITHUB_PATH,
 ) {
-    fun downloadSourceCode(tagName: String): ZipInputStream {
-        val url = URL("$githubBasePath/$owner/$repo/archive/refs/tags/${tagName}.zip")
-        val inputStream = (url.openConnection() as HttpURLConnection)
-            .apply { requestMethod = "GET" }
-            .inputStream
-        return ZipInputStream(inputStream)
-    }
+    private val httpClient = HttpClient()
+
+    fun downloadSourceCode(tagName: String): ZipInputStream =
+        ZipInputStream(httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/archive/refs/tags/${tagName}.zip")).content)
 }
