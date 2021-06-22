@@ -9,7 +9,8 @@ import org.dxworks.githubminer.dto.response.repository.Release
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService
 import org.slf4j.LoggerFactory
-import java.util.zip.ZipInputStream
+import java.io.InputStream
+import java.net.URL
 
 
 class GithubReleasesService(
@@ -27,12 +28,8 @@ class GithubReleasesService(
         return httpResponse.parseAs(RELEASE_LIST_TYPE) as List<Release>
     }
 
-    fun downloadReleaseAsset(tagName: String, assetName: String): ZipInputStream {
-        // Cannot use getApiPath because the request is on github base path (not the api one)
-        val response =
-            httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}"))
-        return ZipInputStream(response.content)
-    }
+    fun downloadReleaseAsset(tagName: String, assetName: String): InputStream =
+        URL("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}").openStream()
 
     companion object {
         private val RELEASE_LIST_TYPE = object : TypeToken<List<Release?>?>() {}.type
