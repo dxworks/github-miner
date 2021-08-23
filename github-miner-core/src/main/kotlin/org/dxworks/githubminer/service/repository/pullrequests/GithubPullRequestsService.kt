@@ -10,13 +10,15 @@ import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequestReview
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
+import org.dxworks.utils.java.rest.client.response.HttpResponse
 import org.slf4j.LoggerFactory
 
 class GithubPullRequestsService(
-        owner: String,
-        repo: String,
-        githubBasePath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS)
+    owner: String,
+    repo: String,
+    githubBasePath: String = GITHUB_API_PATH,
+    githubTokens: List<String> = listOf(ANONYMOUS),
+    private val processor: ((t: HttpResponse) -> HttpResponse)? = null
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
 
     fun createPullRequest(body: CreatePullRequestBody?): PullRequest {
@@ -28,9 +30,11 @@ class GithubPullRequestsService(
     val allPullRequests: List<PullRequest?>
         get() {
             val pullRequestUrl = PullRequestUrl(getApiPath("pulls"), "all")
-            return paginationUtils.getAllElements(pullRequestUrl) { it.parseAs(PULL_REQUESTS_LIST_TYPE) as List<PullRequest> }
-                    .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
-                    .toList()
+            return paginationUtils.getAllElements(pullRequestUrl) {
+                processor?.let { proc -> proc(it) }
+                it.parseAs(PULL_REQUESTS_LIST_TYPE) as List<PullRequest>
+            }
+                .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
         }
 
     fun getPullRequest(pullRequestNumber: Long): PullRequest {
@@ -45,7 +49,8 @@ class GithubPullRequestsService(
     }
 
     fun getPullRequestCommits(pullRequestNumber: Long): List<RepoCommit> {
-        val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "commits")
+        val apiPath =
+            getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "commits")
         val pullRequestCommitsUrl = GenericUrl(apiPath)
         return paginationUtils.getAllElements(pullRequestCommitsUrl) { it.parseAs(PULL_REQUESTS_COMMITS_LIST_TYPE) as List<RepoCommit> }
     }
@@ -55,7 +60,8 @@ class GithubPullRequestsService(
     }
 
     fun getPullRequestReviews(pullRequestNumber: Long): List<PullRequestReview> {
-        val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "reviews")
+        val apiPath =
+            getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "reviews")
         val pullRequestReviewsUrl = GenericUrl(apiPath)
         return paginationUtils.getAllElements(pullRequestReviewsUrl) { it.parseAs(PULL_REQUESTS_REVIEW_LIST_TYPE) as List<PullRequestReview> }
     }

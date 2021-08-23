@@ -5,9 +5,9 @@ import org.dxworks.githubminer.pagination.PageLinks
 import org.dxworks.utils.java.rest.client.response.HttpResponse
 import java.io.InputStream
 
-class GithubHttpResponse(private val wrappedResponse: HttpResponse) : HttpResponse(wrappedResponse.response) {
-    val pageLinks: PageLinks = PageLinks(this)
-    val rateLimit: RateLimit = RateLimit(this)
+open class GithubHttpResponse(private val wrappedResponse: HttpResponse) : HttpResponse(wrappedResponse.response) {
+    open val pageLinks: PageLinks = PageLinks(this)
+    open val rateLimit: RateLimit = RateLimit(this)
 
-    override fun readContentString() = wrappedResponse.parseAsString()
+    public override fun readContentString() = wrappedResponse.parseAsString()
 }

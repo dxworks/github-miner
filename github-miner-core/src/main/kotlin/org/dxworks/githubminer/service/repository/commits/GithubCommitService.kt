@@ -6,12 +6,14 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
+import org.dxworks.utils.java.rest.client.response.HttpResponse
 
 class GithubCommitService(
         owner: String,
         repo: String,
         githubBasePath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS)
+        githubTokens: List<String> = listOf(ANONYMOUS),
+        private val processor: ((t: HttpResponse) -> HttpResponse)? = null
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
 
     val allCommits: List<RepoCommit?>
