@@ -23,7 +23,6 @@ class GithubReleasesService(
 
     fun getReleases(): List<Release> {
         val apiPath = getApiPath("releases")
-        log.info("Retrieving $apiPath")
         val httpResponse = httpClient.get(GenericUrl(apiPath))
         return httpResponse.parseAs(RELEASE_LIST_TYPE) as List<Release>
     }

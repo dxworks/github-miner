@@ -26,7 +26,6 @@ class GithubPaginationUtils(githubBasePath: String = GITHUB_API_PATH,
     }
 
     private fun getHttpResponse(genericUrl: GenericUrl): GithubHttpResponse {
-        log.info("Retrieving $genericUrl")
         return GithubHttpResponse(httpClient.get(genericUrl))
     }
 

@@ -39,7 +39,6 @@ class GithubPullRequestsService(
 
     fun getPullRequest(pullRequestNumber: Long): PullRequest {
         val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number")
-        log.info("Retrieving $apiPath")
         val httpResponse = httpClient.get(GenericUrl(apiPath))
         return httpResponse.parseAs(PullRequest::class.java)
     }

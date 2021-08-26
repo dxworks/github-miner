@@ -3,6 +3,7 @@ package org.dxworks.githubminer.http
 import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.HttpResponseException
+import com.google.api.client.http.HttpResponseInterceptor
 import com.google.api.client.http.HttpStatusCodes.STATUS_CODE_FORBIDDEN
 import com.google.api.client.http.HttpStatusCodes.STATUS_CODE_NOT_FOUND
 import org.dxworks.githubminer.constants.ANONYMOUS
@@ -15,41 +16,78 @@ import org.dxworks.utils.java.rest.client.response.HttpResponse
 import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
-import java.util.*
 
-class GithubHttpClient(private val githubTokens: List<String>, private val githubBasePath: String) : HttpClient(defaultHttpRequestInitializer) {
+class GithubHttpClient(private val githubTokens: List<String>, private val githubBasePath: String) :
+    HttpClient(defaultHttpRequestInitializer) {
     private var rateLimitEnabled = true
+    private val invalidTokes = HashSet<String>()
+    private val validTokens = githubTokens.filterNot { invalidTokes.contains(it) }
 
     init {
         getTokenRateLimits()
     }
 
     override fun get(url: GenericUrl, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
-        log.info("[GET] $url")
-        return performRequest { GithubHttpResponse(super.get(url, CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer))) }
+
+        return performRequest {
+            GithubHttpResponse(
+                super.get(
+                    url,
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                )
+            )
+        }
     }
 
     override fun patch(url: GenericUrl, body: Any?, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
         log.info("[PATCH] $url")
-        return performRequest { GithubHttpResponse(super.patch(url, body, CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer))) }
+        return performRequest {
+            GithubHttpResponse(
+                super.patch(
+                    url,
+                    body,
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                )
+            )
+        }
     }
 
     override fun post(url: GenericUrl, body: Any?, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
         log.info("[POST] $url")
-        return performRequest { GithubHttpResponse(super.post(url, body, CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer))) }
+        return performRequest {
+            GithubHttpResponse(
+                super.post(
+                    url,
+                    body,
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                )
+            )
+        }
     }
 
     override fun put(url: GenericUrl?, body: Any?, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
         log.info("[PUT] $url")
-        return performRequest { GithubHttpResponse(super.put(url, body, CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer))) }
+        return performRequest {
+            GithubHttpResponse(
+                super.put(
+                    url,
+                    body,
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                )
+            )
+        }
     }
 
     private fun getTokenRateLimits() {
         var response: GithubHttpResponse?
-        for (token in githubTokens) {
+        for (token in validTokens) {
             try {
-                response = GithubHttpResponse(super.get(GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
-                        GithubBearerAuthenticationProvider(token)))
+                response = GithubHttpResponse(
+                    super.get(
+                        GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
+                        GithubBearerAuthenticationProvider(token)
+                    )
+                )
                 tokenRateLimits[token] = response.rateLimit
                 response.readContentString()
             } catch (e: HttpResponseException) {
@@ -64,7 +102,7 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
 
     private fun performRequest(doRequest: (token: String) -> GithubHttpResponse): HttpResponse {
         if (!rateLimitEnabled)
-            return doRequest(githubTokens.firstOrNull() ?: ANONYMOUS)
+            return doRequest(validTokens.firstOrNull() ?: ANONYMOUS)
 
         return tryPerformRequestConsideringRateLimit(doRequest)
     }
@@ -83,40 +121,61 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
                     }
                     return response
                 } catch (e: HttpResponseException) {
-                    if (rateLimitExceeded(e))
-                        tokenRateLimits[usedToken] = GithubHttpResponse(super.get(GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
-                                GithubBearerAuthenticationProvider(usedToken))).rateLimit
-                    else throw e
+                    log.warn(e.content)
+                    when {
+                        rateLimitExceeded(e) -> tokenRateLimits[usedToken] = GithubHttpResponse(
+                            super.get(
+                                GenericUrl("$githubBasePath/$RATE_LIMIT_PATH"),
+                                GithubBearerAuthenticationProvider(usedToken)
+                            )
+                        ).rateLimit
+                        abuseMechanismTriggered(e) -> tokenRateLimits[usedToken]?.resetTimestampFromAbuse(e)
+                        isNotFound(e) -> invalidTokes.add(usedToken)
+                    }
                 }
             }
         }
     }
 
+    private fun isNotFound(e: HttpResponseException) = e.statusCode == STATUS_CODE_NOT_FOUND
+
     private fun waitUntilSoonestRateLimitReset() {
         val waitUntil = tokenRateLimits.values.mapNotNull { it.resetTimestamp }.minOrNull()!!
         log.info("Waiting until $waitUntil")
-        Thread.sleep((waitUntil.toEpochSecond(ZoneOffset.UTC) - ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond() + 1) * 1000)
+        Thread.sleep(
+            (waitUntil.toEpochSecond(ZoneOffset.UTC) - ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond() + 1) * 1000
+        )
         getTokenRateLimits()
     }
 
     private fun retrieveActiveTokens(): List<String> {
         return tokenRateLimits
-                .filter { it.value.remainingRequests > 0 }
-                .map { it.key }
+            .filterNot { invalidTokes.contains(it.key) }
+            .filter { it.value.remainingRequests > 0 }
+            .map { it.key }
     }
 
     private fun severRateLimitDisabled(e: HttpResponseException) =
-            e.statusCode == STATUS_CODE_NOT_FOUND && e.content.contains("Rate limiting is not enabled")
+        e.statusCode == STATUS_CODE_NOT_FOUND && e.content.contains("Rate limiting is not enabled")
 
     private fun rateLimitExceeded(e: HttpResponseException) =
-            e.statusCode == STATUS_CODE_FORBIDDEN &&
-                (e.content.contains("API rate limit exceeded for")
-                    || e.content.contains("You have triggered an abuse detection mechanism."))
+        e.statusCode == STATUS_CODE_FORBIDDEN &&
+                e.content.contains("API rate limit exceeded for")
+
+    private fun abuseMechanismTriggered(e: HttpResponseException) =
+        e.statusCode == STATUS_CODE_FORBIDDEN &&
+                e.content.contains("You have triggered an abuse detection mechanism.")
 
     companion object {
         private val tokenRateLimits: MutableMap<String, RateLimit> = HashMap()
-        private val defaultHttpRequestInitializer = HttpRequestInitializer { it.readTimeout = 50000 }
+        private val defaultHttpRequestInitializer = HttpRequestInitializer {
+            it.readTimeout = 50000
+            it.throwExceptionOnExecuteError = false
+            log.info(it.url.toString())
+            it.responseInterceptor = HttpResponseInterceptor {
+                println("${it.request.requestMethod} ${it.statusCode} ${it.statusMessage}")
+            }
+        }
         private val log = LoggerFactory.getLogger(GithubHttpClient::class.java)
     }
 }
-

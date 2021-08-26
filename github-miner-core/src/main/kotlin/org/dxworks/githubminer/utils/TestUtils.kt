@@ -14,7 +14,8 @@ object TestUtils {
 
     private fun loadProperties() {
         properties = Properties()
-        properties!!.load(FileInputStream(Paths.get("config", "test.properties").toFile()))
+        Paths.get("config", "test.properties").toFile().takeIf { it.exists() }
+            ?.let { properties!!.load(FileInputStream(it)) }
     }
 
     init {
@@ -22,7 +23,8 @@ object TestUtils {
     }
 
     val githubCredentials: List<String>
-        get() = properties?.entries?.filter { (it.key as String).startsWith("test.github.token") }?.map { it.value as String }
-                ?: listOf(ANONYMOUS)
+        get() = properties?.entries?.filter { (it.key as String).startsWith("test.github.token") }
+            ?.map { it.value as String }?.takeIf { it.isNotEmpty() }
+            ?: listOf(ANONYMOUS)
 
 }
