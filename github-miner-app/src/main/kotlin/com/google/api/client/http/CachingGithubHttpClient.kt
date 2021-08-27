@@ -10,6 +10,7 @@ import org.dizitart.no2.objects.ObjectRepository
 import org.dizitart.no2.objects.filters.ObjectFilters
 import org.dxworks.githubminer.GithubResponseCache
 import org.dxworks.githubminer.http.GithubHttpClient
+import org.dxworks.githubminer.http.GithubHttpResponse
 import org.dxworks.utils.java.rest.client.providers.CompositeHttpRequestInitializer
 import org.dxworks.utils.java.rest.client.response.HttpResponse
 
@@ -26,7 +27,10 @@ class CachingGithubHttpClient(
                 url, getModifiedCheckingInitializer(customRequestInitializer, cachedResponse)
             )
             if (response.statusCode == STATUS_CODE_NOT_MODIFIED)
-                cachedResponse.toHttpResponse()
+                cachedResponse.apply {
+                    headers = response.headers
+                    repo.update(this)
+                }.toHttpResponse()
             else
                 response.also { repo.update(it.toGithubResponseCache()) }
         } ?: super.get(url, customRequestInitializer).also { repo.insert(it.toGithubResponseCache()) }
@@ -54,7 +58,7 @@ fun HttpResponse.toGithubResponseCache() = GithubResponseCache(
 
 fun GithubResponseCache.toHttpResponse(): HttpResponse {
     val cache = this
-    return HttpResponse(object : MockHttpTransport() {
+    return GithubHttpResponse(HttpResponse(object : MockHttpTransport() {
         override fun buildRequest(method: String, url: String): LowLevelHttpRequest {
             return object : MockLowLevelHttpRequest() {
                 override fun execute(): LowLevelHttpResponse {
@@ -68,5 +72,5 @@ fun GithubResponseCache.toHttpResponse(): HttpResponse {
                 }
             }
         }
-    }.createRequestFactory().buildGetRequest(GenericUrl(url)).execute())
+    }.createRequestFactory().buildGetRequest(GenericUrl(url)).execute()))
 }

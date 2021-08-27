@@ -18,7 +18,6 @@ internal class GithubRepoExporterIT {
         GithubRepoExporter(
             "andrei2699",
             "Music-Events-Application",
-            githubTokens = listOf("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"),
             clientFactory = CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))
         )
 
