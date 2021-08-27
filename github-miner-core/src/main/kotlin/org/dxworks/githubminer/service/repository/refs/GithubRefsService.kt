@@ -7,7 +7,6 @@ import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.request.repository.refs.RefRequestBody
 import org.dxworks.githubminer.dto.response.repository.refs.Ref
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
-import org.dxworks.utils.java.rest.client.providers.BasicAuthenticationProvider
 
 class GithubRefsService(
         owner: String,

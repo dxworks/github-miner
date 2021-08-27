@@ -5,14 +5,16 @@ import com.google.common.reflect.TypeToken
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.response.repository.branches.Branch
+import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 
 class GithubBranchService(
-        owner: String,
-        repo: String,
-        githubBasePath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS)
-) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
+    owner: String,
+    repo: String,
+    githubBasePath: String = GITHUB_API_PATH,
+    githubTokens: List<String> = listOf(ANONYMOUS),
+    clientFactory: GithubHttpClientFactory? = null
+) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens, clientFactory) {
 
     val allBranches: List<Branch?>
         get() {

@@ -4,14 +4,17 @@ import com.google.api.client.http.GenericUrl
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.http.GithubHttpResponse
+import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
 import org.dxworks.githubminer.service.GithubApiService
 import org.slf4j.LoggerFactory
-import java.lang.reflect.Type
 import java.util.*
 
-class GithubPaginationUtils(githubBasePath: String = GITHUB_API_PATH,
-                            githubTokens: List<String> = listOf(ANONYMOUS))
-    : GithubApiService(githubBasePath, githubTokens) {
+class GithubPaginationUtils(
+    githubBasePath: String = GITHUB_API_PATH,
+    githubTokens: List<String> = listOf(ANONYMOUS),
+    clientFactory: GithubHttpClientFactory?
+)
+    : GithubApiService(githubBasePath, githubTokens, clientFactory) {
 
     fun <T> getAllElements(firstUrl: GenericUrl, responseParser: (GithubHttpResponse) -> List<T>): List<T> {
         var httpResponse = getHttpResponse(firstUrl)

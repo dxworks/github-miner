@@ -11,7 +11,7 @@ import java.math.BigDecimal
 
 class GithubInvitationService(githubBasePath: String = GITHUB_API_PATH,
                               githubTokens: List<String> = listOf(ANONYMOUS))
-    : GithubApiService(githubBasePath, githubTokens) {
+    : GithubApiService(githubBasePath, githubTokens,) {
 
     fun listInvitationsForUser(): List<Invitation> {
         val apiPath = getApiPath("user", "repository_invitations")

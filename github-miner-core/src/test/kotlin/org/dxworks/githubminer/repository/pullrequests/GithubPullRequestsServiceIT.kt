@@ -92,7 +92,11 @@ internal class GithubPullRequestsServiceIT {
     }
 
     companion object {
-        private val service = GithubPullRequestsService("andrei2699", "Music-Events-Application", githubTokens = githubCredentials)
+        private val service = GithubPullRequestsService(
+            "andrei2699",
+            "Music-Events-Application",
+            githubTokens = githubCredentials,
+        )
         private var pullRequests: List<PullRequest?>? = null
 
         @BeforeAll

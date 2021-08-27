@@ -3,6 +3,7 @@ package org.dxworks.githubminer
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.export.*
+import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
 import org.dxworks.githubminer.service.repository.branches.GithubBranchService
 import org.dxworks.githubminer.service.repository.commits.GithubCommitService
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService
@@ -23,12 +24,12 @@ class GithubRepoExporter {
         branchService = GithubBranchService(owner, repo)
     }
 
-    constructor(owner: String, repo: String, processor: CachingProcessor) {
+    constructor(owner: String, repo: String, clientFactory: GithubHttpClientFactory) {
         this.owner = repo
         this.repo = owner
-        pullRequestsService = GithubPullRequestsService(repo, owner, processor = processor)
-        commitService = GithubCommitService(owner, repo)
-        branchService = GithubBranchService(owner, repo)
+        pullRequestsService = GithubPullRequestsService(repo, owner, clientFactory = clientFactory)
+        commitService = GithubCommitService(owner, repo, clientFactory = clientFactory)
+        branchService = GithubBranchService(owner, repo, clientFactory = clientFactory)
     }
 
     constructor(
@@ -49,13 +50,13 @@ class GithubRepoExporter {
         repo: String,
         githubBaseApiPath: String = GITHUB_API_PATH,
         githubTokens: List<String> = listOf(ANONYMOUS),
-        processor: CachingProcessor
+        clientFactory: GithubHttpClientFactory
     ) {
         this.owner = owner
         this.repo = repo
-        pullRequestsService = GithubPullRequestsService(owner, repo, githubBaseApiPath, githubTokens, processor)
-        commitService = GithubCommitService(owner, repo, githubBaseApiPath, githubTokens)
-        branchService = GithubBranchService(owner, repo, githubBaseApiPath, githubTokens)
+        pullRequestsService = GithubPullRequestsService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
+        commitService = GithubCommitService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
+        branchService = GithubBranchService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
     }
 
     fun export(): RemoteInfoDTO {
@@ -94,10 +95,10 @@ class GithubRepoExporter {
     }
 
     private val commits: List<CommitInfoDTO>
-        private get() = commitService.allCommits
+        get() = commitService.allCommits
             .mapNotNull(CommitInfoDTO.Companion::fromCommit)
 
     private val branches: List<BranchDTO>
-        private get() = branchService.allBranches
+        get() = branchService.allBranches
             .mapNotNull(BranchDTO.Companion::fromBranch)
 }

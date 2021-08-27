@@ -9,8 +9,8 @@ import org.dxworks.githubminer.dto.request.repository.pullrequests.CreatePullReq
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequestReview
+import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
-import org.dxworks.utils.java.rest.client.response.HttpResponse
 import org.slf4j.LoggerFactory
 
 class GithubPullRequestsService(
@@ -18,8 +18,8 @@ class GithubPullRequestsService(
     repo: String,
     githubBasePath: String = GITHUB_API_PATH,
     githubTokens: List<String> = listOf(ANONYMOUS),
-    private val processor: ((t: HttpResponse) -> HttpResponse)? = null
-) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
+    clientFactory: GithubHttpClientFactory? = null
+) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens, clientFactory) {
 
     fun createPullRequest(body: CreatePullRequestBody?): PullRequest {
         val apiPath = getApiPath("pulls")
@@ -31,7 +31,6 @@ class GithubPullRequestsService(
         get() {
             val pullRequestUrl = PullRequestUrl(getApiPath("pulls"), "all")
             return paginationUtils.getAllElements(pullRequestUrl) {
-                processor?.let { proc -> proc(it) }
                 it.parseAs(PULL_REQUESTS_LIST_TYPE) as List<PullRequest>
             }
                 .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }

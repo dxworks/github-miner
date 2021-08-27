@@ -17,18 +17,17 @@ import org.slf4j.LoggerFactory
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-class GithubHttpClient(private val githubTokens: List<String>, private val githubBasePath: String) :
+open class GithubHttpClient(private val githubTokens: List<String>, private val githubBasePath: String) :
     HttpClient(defaultHttpRequestInitializer) {
     private var rateLimitEnabled = true
     private val invalidTokes = HashSet<String>()
-    private val validTokens = githubTokens.filterNot { invalidTokes.contains(it) }
+    private val validTokens get() = githubTokens.filterNot { invalidTokes.contains(it) }
 
     init {
         getTokenRateLimits()
     }
 
     override fun get(url: GenericUrl, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
-
         return performRequest {
             GithubHttpResponse(
                 super.get(
@@ -100,12 +99,10 @@ class GithubHttpClient(private val githubTokens: List<String>, private val githu
         }
     }
 
-    private fun performRequest(doRequest: (token: String) -> GithubHttpResponse): HttpResponse {
-        if (!rateLimitEnabled)
-            return doRequest(validTokens.firstOrNull() ?: ANONYMOUS)
-
-        return tryPerformRequestConsideringRateLimit(doRequest)
-    }
+    private fun performRequest(doRequest: (token: String) -> GithubHttpResponse) = if (!rateLimitEnabled)
+        doRequest(validTokens.firstOrNull() ?: ANONYMOUS)
+    else
+        tryPerformRequestConsideringRateLimit(doRequest)
 
     private fun tryPerformRequestConsideringRateLimit(doRequest: (token: String) -> GithubHttpResponse): GithubHttpResponse {
         while (true) {

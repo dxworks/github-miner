@@ -1,5 +1,6 @@
 package org.dxworks.githubminer
 
+import com.google.api.client.http.factory.CachingGithubHttpClientFactory
 import org.dizitart.no2.Nitrite
 import org.dxworks.argumenthor.Argumenthor
 import org.dxworks.argumenthor.config.ArgumenthorConfiguration
@@ -12,7 +13,6 @@ import org.dxworks.githubminer.config.Repo
 import org.dxworks.githubminer.config.RepoListField
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
-import org.dxworks.githubminer.dto.commons.User
 import org.dxworks.utils.java.rest.client.utils.JsonMapper
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -54,10 +54,9 @@ fun main(args: Array<String>) {
         .filePath(cachePath.resolve("github-miner.db").toFile())
         .openOrCreate("test", "test")
 
-    val cacheProcessor = CachingProcessor(database.getRepository(GithubResponseCache::class.java))
 
     repos.forEach { repo ->
-        val export = GithubRepoExporter(repo.user, repo.repo, githubBasePath, tokens, cacheProcessor).export()
+        val export = GithubRepoExporter(repo.user, repo.repo, githubBasePath, tokens, CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))).export()
         JsonMapper().writeJSONtoFile(Paths.get(RESULTS_FOLDER, "${repo.user}-${repo.repo}-prs.json").toFile(), export)
     }
 }

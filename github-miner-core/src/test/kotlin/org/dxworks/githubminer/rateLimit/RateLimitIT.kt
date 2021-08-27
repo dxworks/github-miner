@@ -15,7 +15,10 @@ class RateLimitIT{
     }
 }
 
-class TestGithubApiService(githubBasePath: String, githubTokens: List<String>) : GithubApiService(githubBasePath, githubTokens) {
+class TestGithubApiService(githubBasePath: String, githubTokens: List<String>) : GithubApiService(
+    githubBasePath,
+    githubTokens,
+) {
     fun randomRequest() {
         httpClient.get(GenericUrl(getApiPath("Dsadsadsa")))
     }
