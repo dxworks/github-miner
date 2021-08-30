@@ -9,9 +9,9 @@ internal class GithubRefsServiceIT {
 
     @Test
     fun getAllBranches() {
-            val ref = service.getRef("heads/master")
-            Assertions.assertEquals("refs/heads/master", ref.ref)
-            Assertions.assertEquals("commit", ref.`object`!!.type)
-            Assertions.assertNotNull(ref.`object`!!.sha)
-        }
+        val ref = service.getRef("heads/master")
+        Assertions.assertEquals("refs/heads/master", ref?.ref)
+        Assertions.assertEquals("commit", ref?.`object`!!.type)
+        Assertions.assertNotNull(ref.`object`!!.sha)
+    }
 }

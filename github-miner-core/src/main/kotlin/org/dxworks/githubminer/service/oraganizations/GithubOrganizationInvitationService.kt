@@ -5,6 +5,7 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.request.organizations.invitations.OrganizationInvitationBody
 import org.dxworks.githubminer.dto.response.organizations.inivitations.OrganizationInvitation
+import org.dxworks.githubminer.http.parseIfOk
 
 class GithubOrganizationInvitationService(
     org: String,
@@ -13,8 +14,8 @@ class GithubOrganizationInvitationService(
 ) : GithubOrganizationService(org, githubBasePath, githubTokens) {
 
 
-    fun createOrganizationInvitation(invite: OrganizationInvitationBody): OrganizationInvitation =
+    fun createOrganizationInvitation(invite: OrganizationInvitationBody): OrganizationInvitation? =
         httpClient.post(GenericUrl(getApiPath("invitations")), invite)
-            .parseAs(OrganizationInvitation::class.java)
+            .parseIfOk(OrganizationInvitation::class.java)
 
 }

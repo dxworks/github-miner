@@ -6,9 +6,8 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
 import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
-import org.dxworks.githubminer.http.flow.HttpFlow
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
-import org.dxworks.utils.java.rest.client.response.HttpResponse
 
 class GithubCommitService(
     owner: String,
@@ -21,7 +20,9 @@ class GithubCommitService(
     val allCommits: List<RepoCommit?>
         get() {
             val commitsUrl = GenericUrl(getApiPath("commits"))
-            return paginationUtils.getAllElements(commitsUrl) { it.parseAs(COMMIT_LIST_TYPE) as List<RepoCommit> }
+            return paginationUtils.getAllElements(commitsUrl) {
+                (it.parseIfOk(COMMIT_LIST_TYPE) ?: emptyList<RepoCommit>()) as List<RepoCommit>
+            }
         }
 
     companion object {

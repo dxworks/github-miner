@@ -13,28 +13,29 @@ import org.dxworks.githubminer.dto.request.repository.actions.secrets.SecretRequ
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.Secret
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.SecretsForRepo
 import org.dxworks.githubminer.dto.response.repository.actions.secrets.SecretsPublicKey
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 import org.slf4j.LoggerFactory
 
 class GithubSecretsService(
-        owner: String,
-        repo: String,
-        githubBasePath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS)
+    owner: String,
+    repo: String,
+    githubBasePath: String = GITHUB_API_PATH,
+    githubTokens: List<String> = listOf(ANONYMOUS)
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
 
     fun listAllSecretsForRepo(): List<Secret> {
         val apiPath = getApiPath("actions", "secrets")
         val httpResponse = httpClient.get(GenericUrl(apiPath))
-        val secretsForRepo = httpResponse.parseAs(SecretsForRepo::class.java)
-        return secretsForRepo.secrets ?: emptyList()
+        val secretsForRepo = httpResponse.parseIfOk(SecretsForRepo::class.java)
+        return secretsForRepo?.secrets ?: emptyList()
     }
 
-    val publicKey: SecretsPublicKey
+    val publicKey: SecretsPublicKey?
         get() {
             val apiPath = getApiPath("actions", "secrets", "public-key")
             val httpResponse = httpClient.get(GenericUrl(apiPath))
-            return httpResponse.parseAs(SecretsPublicKey::class.java)
+            return httpResponse.parseIfOk(SecretsPublicKey::class.java)
         }
 
     fun createSecret(name: String, value: String): Boolean {
@@ -48,14 +49,15 @@ class GithubSecretsService(
     private fun createNewSecret(value: String): SecretRequestBody? {
         val publicKey = publicKey
         val lazySodiumJava = LazySodiumJava(SodiumJava(), Base64MessageEncoder())
-        val encryptedSecret: String
-        encryptedSecret = try {
-            lazySodiumJava.cryptoBoxSealEasy(value, Key.fromBase64String(publicKey.key))
+        return try {
+            publicKey?.let {
+                val encryptedSecret = lazySodiumJava.cryptoBoxSealEasy(value, Key.fromBase64String(it.key))
+                SecretRequestBody(encryptedSecret, it.key_id)
+            }
         } catch (e: SodiumException) {
-            GithubSecretsService.log.error("Secret encryption failed!", e)
-            return null
+            log.error("Secret encryption failed!", e)
+            null
         }
-        return SecretRequestBody(encryptedSecret, publicKey.key_id)
     }
 
     companion object {

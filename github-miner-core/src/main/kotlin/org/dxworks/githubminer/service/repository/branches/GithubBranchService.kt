@@ -6,6 +6,7 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.response.repository.branches.Branch
 import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 
 class GithubBranchService(
@@ -16,10 +17,12 @@ class GithubBranchService(
     clientFactory: GithubHttpClientFactory? = null
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens, clientFactory) {
 
-    val allBranches: List<Branch?>
+    val allBranches: List<Branch>
         get() {
             val commitsUrl = GenericUrl(getApiPath("branches"))
-            return paginationUtils.getAllElements(commitsUrl) { it.parseAs(BRANCH_LIST_TYPE) as List<Branch> }
+            return paginationUtils.getAllElements(commitsUrl) {
+                (it.parseIfOk(BRANCH_LIST_TYPE) ?: emptyList<Branch>()) as List<Branch>
+            }
         }
 
     companion object {

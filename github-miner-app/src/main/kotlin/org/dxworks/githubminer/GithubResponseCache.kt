@@ -7,7 +7,8 @@ class GithubResponseCache(
     @Id
     var url: String,
     var body: String,
-    var headers: HttpHeaders
+    var headers: HttpHeaders,
+    var statusCode: Int
 ) {
-    constructor() : this("", "", HttpHeaders())
+    constructor() : this("", "", HttpHeaders(), 0)
 }

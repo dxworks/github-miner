@@ -4,6 +4,7 @@ import com.google.api.client.http.GenericUrl
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.commons.User
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.GithubApiService
 
 class GithubUsersService(
@@ -11,9 +12,9 @@ class GithubUsersService(
     githubTokens: List<String> = listOf(ANONYMOUS)
 ) : GithubApiService(githubBasePath, githubTokens) {
 
-    fun getUser(username: String): User {
+    fun getUser(username: String): User? {
         val userUrl = GenericUrl(getApiPath(mapOf("username" to username), "users", ":username"))
 
-        return httpClient.get(userUrl).parseAs(User::class.java)
+        return httpClient.get(userUrl).parseIfOk(User::class.java)
     }
 }

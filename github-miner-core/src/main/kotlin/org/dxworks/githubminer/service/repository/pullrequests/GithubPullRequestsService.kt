@@ -10,6 +10,7 @@ import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequestReview
 import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 import org.slf4j.LoggerFactory
 
@@ -21,25 +22,24 @@ class GithubPullRequestsService(
     clientFactory: GithubHttpClientFactory? = null
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens, clientFactory) {
 
-    fun createPullRequest(body: CreatePullRequestBody?): PullRequest {
+    fun createPullRequest(body: CreatePullRequestBody?): PullRequest? {
         val apiPath = getApiPath("pulls")
-        val httpResponse = httpClient.post(GenericUrl(apiPath), body)
-        return httpResponse.parseAs(PullRequest::class.java)
+        return httpClient.post(GenericUrl(apiPath), body)
+            .parseIfOk(PullRequest::class.java)
     }
 
-    val allPullRequests: List<PullRequest?>
+    val allPullRequests: List<PullRequest>
         get() {
             val pullRequestUrl = PullRequestUrl(getApiPath("pulls"), "all")
             return paginationUtils.getAllElements(pullRequestUrl) {
-                it.parseAs(PULL_REQUESTS_LIST_TYPE) as List<PullRequest>
-            }
-                .map { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
+                (it.parseIfOk(PULL_REQUESTS_LIST_TYPE) ?: emptyList<PullRequest>()) as List<PullRequest>
+            }.mapNotNull { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
         }
 
-    fun getPullRequest(pullRequestNumber: Long): PullRequest {
+    fun getPullRequest(pullRequestNumber: Long): PullRequest? {
         val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number")
-        val httpResponse = httpClient.get(GenericUrl(apiPath))
-        return httpResponse.parseAs(PullRequest::class.java)
+        return httpClient.get(GenericUrl(apiPath))
+            .parseIfOk(PullRequest::class.java)
     }
 
     fun getPullRequestCommits(pullRequest: PullRequest): List<RepoCommit> {
@@ -50,7 +50,9 @@ class GithubPullRequestsService(
         val apiPath =
             getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "commits")
         val pullRequestCommitsUrl = GenericUrl(apiPath)
-        return paginationUtils.getAllElements(pullRequestCommitsUrl) { it.parseAs(PULL_REQUESTS_COMMITS_LIST_TYPE) as List<RepoCommit> }
+        return paginationUtils.getAllElements(pullRequestCommitsUrl) {
+            (it.parseIfOk(PULL_REQUESTS_COMMITS_LIST_TYPE) ?: emptyList<RepoCommit>()) as List<RepoCommit>
+        }
     }
 
     fun getPullRequestReviews(pullRequest: PullRequest): List<PullRequestReview> {
@@ -61,7 +63,9 @@ class GithubPullRequestsService(
         val apiPath =
             getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "reviews")
         val pullRequestReviewsUrl = GenericUrl(apiPath)
-        return paginationUtils.getAllElements(pullRequestReviewsUrl) { it.parseAs(PULL_REQUESTS_REVIEW_LIST_TYPE) as List<PullRequestReview> }
+        return paginationUtils.getAllElements(pullRequestReviewsUrl) {
+            (it.parseIfOk(PULL_REQUESTS_REVIEW_LIST_TYPE) ?: emptyList<PullRequestReview>()) as List<PullRequestReview>
+        }
     }
 
     companion object {

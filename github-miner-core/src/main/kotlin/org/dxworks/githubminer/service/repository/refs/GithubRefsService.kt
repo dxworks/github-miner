@@ -6,41 +6,42 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.request.repository.refs.RefRequestBody
 import org.dxworks.githubminer.dto.response.repository.refs.Ref
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 
 class GithubRefsService(
-        owner: String,
-        repo: String,
-        githubBasePath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS)
+    owner: String,
+    repo: String,
+    githubBasePath: String = GITHUB_API_PATH,
+    githubTokens: List<String> = listOf(ANONYMOUS)
 ) : GithubRepositoryService(owner, repo, githubBasePath, githubTokens) {
 
-    fun getRef(refName: String): Ref {
+    fun getRef(refName: String): Ref? {
         val apiPath = getApiPath(ImmutableMap.of("ref", refName), "git", "ref", ":ref")
         val httpResponse = httpClient.get(GenericUrl(apiPath))
-        return httpResponse.parseAs(Ref::class.java)
+        return httpResponse.parseIfOk(Ref::class.java)
     }
 
-    fun getBranch(branchName: String): Ref {
+    fun getBranch(branchName: String): Ref? {
         return getRef("heads/$branchName")
     }
 
-    fun getTag(tagName: String): Ref {
+    fun getTag(tagName: String): Ref? {
         return getRef("tags/$tagName")
     }
 
-    fun createRef(refName: String?, sha: String?): Ref {
+    fun createRef(refName: String?, sha: String?): Ref? {
         val apiPath = getApiPath("git", "refs")
         val body = RefRequestBody(refName, sha)
         val httpResponse = httpClient.post(GenericUrl(apiPath), body)
-        return httpResponse.parseAs(Ref::class.java)
+        return httpResponse.parseIfOk(Ref::class.java)
     }
 
-    fun createBranch(branchName: String, sha: String?): Ref {
+    fun createBranch(branchName: String, sha: String?): Ref? {
         return createRef("refs/heads/$branchName", sha)
     }
 
-    fun createTag(tagName: String, sha: String?): Ref {
+    fun createTag(tagName: String, sha: String?): Ref? {
         return createRef("refs/tags/$tagName", sha)
     }
 }

@@ -28,7 +28,7 @@ class CachingGithubHttpClient(
             )
             if (response.statusCode == STATUS_CODE_NOT_MODIFIED)
                 cachedResponse.apply {
-                    headers = response.headers
+                    headers.putAll(response.headers)
                     repo.update(this)
                 }.toHttpResponse()
             else
@@ -52,8 +52,9 @@ class CachingGithubHttpClient(
 
 fun HttpResponse.toGithubResponseCache() = GithubResponseCache(
     url = request.url.toString(),
-    body = this.parseAsString(),
-    headers = this.headers,
+    body = parseAsString(),
+    headers = headers,
+    statusCode = statusCode
 )
 
 fun GithubResponseCache.toHttpResponse(): HttpResponse {
@@ -65,6 +66,7 @@ fun GithubResponseCache.toHttpResponse(): HttpResponse {
                     val result = MockLowLevelHttpResponse()
                     result.contentType = Json.MEDIA_TYPE
                     result.setContent(cache.body)
+                    result.statusCode = cache.statusCode
                     cache.headers.forEach {
                         result.addHeader(it.key, it.value.toString())
                     }

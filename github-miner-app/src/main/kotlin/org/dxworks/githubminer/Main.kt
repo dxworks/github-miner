@@ -43,20 +43,34 @@ fun main(args: Array<String>) {
     val tokens: List<String> = argumenthor.getValue(GITHUB_TOKENS)!!
 
     val resultsPath = Paths.get(RESULTS_FOLDER)
-    if(!Files.exists(resultsPath))
+    if (!Files.exists(resultsPath))
         resultsPath.toFile().mkdirs()
 
     val cachePath = Paths.get(CACHE_FOLDER)
-    if(!Files.exists(cachePath))
+    if (!Files.exists(cachePath))
         cachePath.toFile().mkdirs()
 
     val database: Nitrite = Nitrite.builder()
         .filePath(cachePath.resolve("github-miner.db").toFile())
         .openOrCreate("test", "test")
 
-
-    repos.forEach { repo ->
-        val export = GithubRepoExporter(repo.user, repo.repo, githubBasePath, tokens, CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))).export()
-        JsonMapper().writeJSONtoFile(Paths.get(RESULTS_FOLDER, "${repo.user}-${repo.repo}-prs.json").toFile(), export)
+    try {
+        repos.forEach { repo ->
+            val export = GithubRepoExporter(
+                repo.user,
+                repo.repo,
+                githubBasePath,
+                tokens,
+                CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))
+            ).export()
+            JsonMapper().writeJSONtoFile(
+                Paths.get(RESULTS_FOLDER, "${repo.user}-${repo.repo}-prs.json").toFile(),
+                export
+            )
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    } finally {
+        database.close()
     }
 }

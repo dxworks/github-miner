@@ -6,6 +6,7 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.constants.GITHUB_PATH
 import org.dxworks.githubminer.dto.response.repository.Release
+import org.dxworks.githubminer.http.parseIfOk
 import org.dxworks.githubminer.service.repository.GithubRepositoryService
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService
 import org.slf4j.LoggerFactory
@@ -24,7 +25,7 @@ class GithubReleasesService(
     fun getReleases(): List<Release> {
         val apiPath = getApiPath("releases")
         val httpResponse = httpClient.get(GenericUrl(apiPath))
-        return httpResponse.parseAs(RELEASE_LIST_TYPE) as List<Release>
+        return (httpResponse.parseIfOk(RELEASE_LIST_TYPE) ?: emptyList<Release>()) as List<Release>
     }
 
     fun downloadReleaseAsset(tagName: String, assetName: String): InputStream =

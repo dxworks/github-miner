@@ -16,8 +16,9 @@ internal class GithubRepoExporterIT {
 
     private val githubRepoExporter =
         GithubRepoExporter(
-            "andrei2699",
-            "Music-Events-Application",
+            "apache",
+            "kafka",
+            githubTokens = listOf("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", "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"),
             clientFactory = CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))
         )
 

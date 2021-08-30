@@ -4,8 +4,7 @@ import com.google.api.client.http.GenericUrl
 import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.HttpResponseException
 import com.google.api.client.http.HttpResponseInterceptor
-import com.google.api.client.http.HttpStatusCodes.STATUS_CODE_FORBIDDEN
-import com.google.api.client.http.HttpStatusCodes.STATUS_CODE_NOT_FOUND
+import com.google.api.client.http.HttpStatusCodes.*
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.RATE_LIMIT_PATH
 import org.dxworks.githubminer.dto.rate.RateLimit
@@ -14,6 +13,7 @@ import org.dxworks.utils.java.rest.client.HttpClient
 import org.dxworks.utils.java.rest.client.providers.CompositeHttpRequestInitializer
 import org.dxworks.utils.java.rest.client.response.HttpResponse
 import org.slf4j.LoggerFactory
+import java.lang.reflect.Type
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -176,3 +176,9 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
         private val log = LoggerFactory.getLogger(GithubHttpClient::class.java)
     }
 }
+
+fun <T> HttpResponse.parseIfOk(dataClass: Class<T>, orElseGet: ((HttpResponse) -> T?)? = null) =
+    if (statusCode == STATUS_CODE_OK) parseAs(dataClass) else orElseGet?.invoke(this)
+
+fun HttpResponse.parseIfOk(dataClass: Type, orElseGet: ((HttpResponse) -> Any?)? = null): Any? =
+    if (statusCode == STATUS_CODE_OK) parseAs(dataClass) else orElseGet?.invoke(this)

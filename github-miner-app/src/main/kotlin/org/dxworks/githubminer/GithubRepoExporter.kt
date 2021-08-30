@@ -19,7 +19,7 @@ class GithubRepoExporter {
     constructor(owner: String, repo: String) {
         this.owner = repo
         this.repo = owner
-        pullRequestsService = GithubPullRequestsService(repo, owner)
+        pullRequestsService = GithubPullRequestsService(owner, repo)
         commitService = GithubCommitService(owner, repo)
         branchService = GithubBranchService(owner, repo)
     }
@@ -27,7 +27,7 @@ class GithubRepoExporter {
     constructor(owner: String, repo: String, clientFactory: GithubHttpClientFactory) {
         this.owner = repo
         this.repo = owner
-        pullRequestsService = GithubPullRequestsService(repo, owner, clientFactory = clientFactory)
+        pullRequestsService = GithubPullRequestsService(owner, repo, clientFactory = clientFactory)
         commitService = GithubCommitService(owner, repo, clientFactory = clientFactory)
         branchService = GithubBranchService(owner, repo, clientFactory = clientFactory)
     }
