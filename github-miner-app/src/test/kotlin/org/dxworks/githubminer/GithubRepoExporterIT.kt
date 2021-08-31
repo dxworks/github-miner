@@ -18,16 +18,23 @@ internal class GithubRepoExporterIT {
         GithubRepoExporter(
             "apache",
             "kafka",
-            githubTokens = listOf("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", "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"),
+            githubTokens = listOf("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"),
             clientFactory = CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))
         )
 
     @Test
     fun export() {
-        val export = githubRepoExporter.export()
-        Assertions.assertNotNull(export)
-        val file = Paths.get("../remote-export.json").toFile()
-        JsonMapper().writePrettyJSONtoFile(file, export, Charset.defaultCharset())
+        try {
+
+            val export = githubRepoExporter.export()
+            Assertions.assertNotNull(export)
+            val file = Paths.get("../remote-export.json").toFile()
+            JsonMapper().writePrettyJSONtoFile(file, export, Charset.defaultCharset())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            database.close()
+        }
     }
 
     @Test

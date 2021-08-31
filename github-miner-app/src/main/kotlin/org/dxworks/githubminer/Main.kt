@@ -9,10 +9,12 @@ import org.dxworks.argumenthor.config.fields.impl.StringListField
 import org.dxworks.argumenthor.config.sources.impl.ArgsSource
 import org.dxworks.argumenthor.config.sources.impl.EnvSource
 import org.dxworks.argumenthor.config.sources.impl.PropertiesSource
+import org.dxworks.githubminer.config.BooleanField
 import org.dxworks.githubminer.config.Repo
 import org.dxworks.githubminer.config.RepoListField
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
+import org.dxworks.githubminer.http.factory.DefaultGithubHttpClientFactory
 import org.dxworks.utils.java.rest.client.utils.JsonMapper
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -21,6 +23,7 @@ import java.nio.file.Paths
 private const val GITHUB_REPOS = "github.repos"
 private const val GITHUB_TOKENS = "github.tokens"
 private const val GITHUB_BASE_PATH = "github.base.path"
+private const val CACHE = "cache"
 
 private const val RESULTS_FOLDER = "results"
 private const val CACHE_FOLDER = "cache"
@@ -30,7 +33,8 @@ fun main(args: Array<String>) {
         listOf(
             StringField(GITHUB_BASE_PATH, GITHUB_API_PATH),
             RepoListField(GITHUB_REPOS, emptyList()),
-            StringListField(GITHUB_TOKENS, listOf(ANONYMOUS))
+            StringListField(GITHUB_TOKENS, listOf(ANONYMOUS)),
+            BooleanField(CACHE, true)
         )
     ).apply {
         addSource(ArgsSource().also { it.argsList = args.toList() })
@@ -46,13 +50,11 @@ fun main(args: Array<String>) {
     if (!Files.exists(resultsPath))
         resultsPath.toFile().mkdirs()
 
-    val cachePath = Paths.get(CACHE_FOLDER)
-    if (!Files.exists(cachePath))
-        cachePath.toFile().mkdirs()
 
-    val database: Nitrite = Nitrite.builder()
-        .filePath(cachePath.resolve("github-miner.db").toFile())
-        .openOrCreate("test", "test")
+    val (clientFactory, database) = if (argumenthor.getValue<Boolean>(CACHE)!!) {
+        val database: Nitrite = prepareCache()
+        Pair(CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java)), database)
+    } else Pair(DefaultGithubHttpClientFactory(), null)
 
     try {
         repos.forEach { repo ->
@@ -61,7 +63,7 @@ fun main(args: Array<String>) {
                 repo.repo,
                 githubBasePath,
                 tokens,
-                CachingGithubHttpClientFactory(database.getRepository(GithubResponseCache::class.java))
+                clientFactory
             ).export()
             JsonMapper().writeJSONtoFile(
                 Paths.get(RESULTS_FOLDER, "${repo.user}-${repo.repo}-prs.json").toFile(),
@@ -71,6 +73,15 @@ fun main(args: Array<String>) {
     } catch (e: Exception) {
         e.printStackTrace()
     } finally {
-        database.close()
+        database?.close()
     }
+}
+
+private fun prepareCache(): Nitrite {
+    val cachePath = Paths.get(CACHE_FOLDER)
+    if (!Files.exists(cachePath))
+        cachePath.toFile().mkdirs()
+    return Nitrite.builder()
+        .filePath(cachePath.resolve("github-miner.db").toFile())
+        .openOrCreate("test", "test")
 }
