@@ -1,5 +1,6 @@
 package org.dxworks.githubminer.service.repository.source
 
+import com.google.api.client.http.GenericUrl
 import org.dxworks.githubminer.constants.GITHUB_PATH
 import org.dxworks.utils.java.rest.client.HttpClient
 import org.dxworks.utils.java.rest.client.providers.BearerTokenAuthenticationProvider
@@ -15,5 +16,5 @@ class GithubSourceCodeService(
     private val httpClient = token?.let { HttpClient(BearerTokenAuthenticationProvider(token)) } ?: HttpClient()
 
     fun downloadSourceCode(tagName: String): InputStream =
-        URL("$githubBasePath/$owner/$repo/archive/refs/tags/${tagName}.zip").openStream()
+        httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/archive/refs/tags/${tagName}.zip")).content
 }

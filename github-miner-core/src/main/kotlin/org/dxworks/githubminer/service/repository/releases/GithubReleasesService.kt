@@ -29,7 +29,7 @@ class GithubReleasesService(
     }
 
     fun downloadReleaseAsset(tagName: String, assetName: String): InputStream =
-        URL("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}").openStream()
+        httpClient.get(GenericUrl("$githubBasePath/$owner/$repo/releases/download/${tagName}/${assetName}")).content
 
     companion object {
         private val RELEASE_LIST_TYPE = object : TypeToken<List<Release?>?>() {}.type
