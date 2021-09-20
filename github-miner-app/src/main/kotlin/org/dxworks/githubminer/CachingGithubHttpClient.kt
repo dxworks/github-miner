@@ -1,6 +1,10 @@
-package com.google.api.client.http
+package org.dxworks.githubminer
 
+import com.google.api.client.http.GenericUrl
+import com.google.api.client.http.HttpRequestInitializer
 import com.google.api.client.http.HttpStatusCodes.STATUS_CODE_NOT_MODIFIED
+import com.google.api.client.http.LowLevelHttpRequest
+import com.google.api.client.http.LowLevelHttpResponse
 import com.google.api.client.json.Json
 import com.google.api.client.testing.http.MockHttpTransport
 import com.google.api.client.testing.http.MockLowLevelHttpRequest
@@ -8,7 +12,6 @@ import com.google.api.client.testing.http.MockLowLevelHttpResponse
 import com.google.common.net.HttpHeaders.IF_NONE_MATCH
 import org.dizitart.no2.objects.ObjectRepository
 import org.dizitart.no2.objects.filters.ObjectFilters
-import org.dxworks.githubminer.GithubResponseCache
 import org.dxworks.githubminer.http.GithubHttpClient
 import org.dxworks.githubminer.http.GithubHttpResponse
 import org.dxworks.utils.java.rest.client.providers.CompositeHttpRequestInitializer

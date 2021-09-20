@@ -6,7 +6,7 @@ import org.dxworks.githubminer.dto.commons.User
 
 class UserDTO {
     @Key
-    var id: Long? = null
+    var id: Number? = null
 
     @Key
     var login: String? = null

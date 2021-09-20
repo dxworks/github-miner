@@ -1,7 +1,7 @@
-package com.google.api.client.http.factory
+package org.dxworks.githubminer.factory
 
-import com.google.api.client.http.CachingGithubHttpClient
 import org.dizitart.no2.objects.ObjectRepository
+import org.dxworks.githubminer.CachingGithubHttpClient
 import org.dxworks.githubminer.GithubResponseCache
 import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
 

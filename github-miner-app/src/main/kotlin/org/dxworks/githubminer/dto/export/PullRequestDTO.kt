@@ -4,12 +4,12 @@ import com.google.api.client.util.Data
 import com.google.api.client.util.Key
 import org.dxworks.githubminer.dto.response.repository.pullrequests.PullRequest
 
-class PullRequestDTO (
+class PullRequestDTO(
     @Key
-    var id: Long? = null,
+    var id: Number? = null,
 
     @Key
-    var number: Long? = null,
+    var number: Number? = null,
 
     @Key
     var title: String? = null,
@@ -59,20 +59,20 @@ class PullRequestDTO (
     companion object {
         fun fromPullRequest(pullRequest: PullRequest?): PullRequestDTO? {
             return if (pullRequest == null || Data.isNull(pullRequest)) null else PullRequestDTO(
-                    id = pullRequest.id,
-                    number = pullRequest.number,
-                    title = pullRequest.title,
-                    body = pullRequest.body,
-                    head = PrBranchDTO.fromPullRequestBranch(pullRequest.head),
-                    base = PrBranchDTO.fromPullRequestBranch(pullRequest.base),
-                    createdAt = pullRequest.createdAt,
-                    mergedAt = pullRequest.mergedAt,
-                    updatedAt = pullRequest.updatedAt,
-                    closedAt = pullRequest.closedAt,
-                    state = pullRequest.state,
-                    createdBy = UserDTO.fromUser(pullRequest.user),
-                    assignee = UserDTO.fromUser(pullRequest.assignee),
-                    mergedBy = UserDTO.fromUser(pullRequest.mergedBy)
+                id = pullRequest.id,
+                number = pullRequest.number,
+                title = pullRequest.title,
+                body = pullRequest.body,
+                head = PrBranchDTO.fromPullRequestBranch(pullRequest.head),
+                base = PrBranchDTO.fromPullRequestBranch(pullRequest.base),
+                createdAt = pullRequest.createdAt,
+                mergedAt = pullRequest.mergedAt,
+                updatedAt = pullRequest.updatedAt,
+                closedAt = pullRequest.closedAt,
+                state = pullRequest.state,
+                createdBy = UserDTO.fromUser(pullRequest.user),
+                assignee = UserDTO.fromUser(pullRequest.assignee),
+                mergedBy = UserDTO.fromUser(pullRequest.mergedBy)
             )
         }
     }

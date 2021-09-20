@@ -1,6 +1,5 @@
 package org.dxworks.githubminer
 
-import com.google.api.client.http.factory.CachingGithubHttpClientFactory
 import org.dizitart.no2.Nitrite
 import org.dxworks.argumenthor.Argumenthor
 import org.dxworks.argumenthor.config.ArgumenthorConfiguration
@@ -15,6 +14,7 @@ import org.dxworks.githubminer.config.Repo
 import org.dxworks.githubminer.config.RepoListField
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
+import org.dxworks.githubminer.factory.CachingGithubHttpClientFactory
 import org.dxworks.githubminer.http.factory.DefaultGithubHttpClientFactory
 import org.dxworks.utils.java.rest.client.utils.JsonMapper
 import java.nio.file.Files

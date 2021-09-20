@@ -1,7 +1,7 @@
 package org.dxworks.githubminer
 
-import com.google.api.client.http.factory.CachingGithubHttpClientFactory
 import org.dizitart.no2.Nitrite
+import org.dxworks.githubminer.factory.CachingGithubHttpClientFactory
 import org.dxworks.githubminer.service.repository.releases.GithubReleasesService
 import org.dxworks.utils.java.rest.client.utils.JsonMapper
 import org.junit.jupiter.api.Assertions
