@@ -2,7 +2,7 @@ package org.dxworks.githubminer.dto.export
 
 import com.google.api.client.util.Key
 
-class RemoteInfoDTO {
+class GithubProjectDTO {
     @Key
     var pullRequests: List<PullRequestDTO>? = null
 

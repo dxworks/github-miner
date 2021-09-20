@@ -1,4 +1,4 @@
-package org.dxworks.githubminer.utils
+package org.dxworks.githubminer
 
 import org.dxworks.githubminer.constants.ANONYMOUS
 import java.io.FileInputStream

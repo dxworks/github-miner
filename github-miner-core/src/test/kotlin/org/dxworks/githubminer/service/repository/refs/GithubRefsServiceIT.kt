@@ -1,6 +1,6 @@
 package org.dxworks.githubminer.service.repository.refs
 
-import org.dxworks.githubminer.utils.TestUtils.githubCredentials
+import org.dxworks.githubminer.TestUtils.githubCredentials
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

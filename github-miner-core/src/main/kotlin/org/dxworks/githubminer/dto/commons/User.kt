@@ -5,7 +5,7 @@ import com.google.api.client.util.Key
 
 class User(
         @Key
-        var id: Long? = null,
+        var id: Number? = null,
 
         @Key
         var login: String? = null,

@@ -1,7 +1,7 @@
 package org.dxworks.githubminer.service.repository.commits
 
 import org.dxworks.githubminer.dto.response.repository.commits.RepoCommit
-import org.dxworks.githubminer.utils.TestUtils.githubCredentials
+import org.dxworks.githubminer.TestUtils.githubCredentials
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 

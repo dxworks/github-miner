@@ -3,64 +3,34 @@ package org.dxworks.githubminer
 import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.dto.export.*
+import org.dxworks.githubminer.http.factory.DefaultGithubHttpClientFactory
 import org.dxworks.githubminer.http.factory.GithubHttpClientFactory
 import org.dxworks.githubminer.service.repository.branches.GithubBranchService
 import org.dxworks.githubminer.service.repository.commits.GithubCommitService
 import org.dxworks.githubminer.service.repository.pullrequests.GithubPullRequestsService
-import kotlin.streams.toList
+import org.dxworks.githubminer.service.search.GithubPullRequestsSearchService
+import java.time.LocalDate
+import kotlin.concurrent.thread
 
-class GithubRepoExporter {
-    private val owner: String
-    private val repo: String
-    private val pullRequestsService: GithubPullRequestsService
-    private val commitService: GithubCommitService
-    private val branchService: GithubBranchService
+class GithubRepoExporter(
+    owner: String,
+    repo: String,
+    githubBaseApiPath: String = GITHUB_API_PATH,
+    githubTokens: List<String> = listOf(ANONYMOUS),
+    clientFactory: GithubHttpClientFactory = DefaultGithubHttpClientFactory(),
+    private val since: LocalDate? = null,
+) {
+    private val pullRequestsSearchService: GithubPullRequestsSearchService =
+        GithubPullRequestsSearchService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
+    private val pullRequestsService: GithubPullRequestsService =
+        GithubPullRequestsService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
+    private val commitService: GithubCommitService =
+        GithubCommitService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
+    private val branchService: GithubBranchService =
+        GithubBranchService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
 
-    constructor(owner: String, repo: String) {
-        this.owner = repo
-        this.repo = owner
-        pullRequestsService = GithubPullRequestsService(owner, repo)
-        commitService = GithubCommitService(owner, repo)
-        branchService = GithubBranchService(owner, repo)
-    }
-
-    constructor(owner: String, repo: String, clientFactory: GithubHttpClientFactory) {
-        this.owner = repo
-        this.repo = owner
-        pullRequestsService = GithubPullRequestsService(owner, repo, clientFactory = clientFactory)
-        commitService = GithubCommitService(owner, repo, clientFactory = clientFactory)
-        branchService = GithubBranchService(owner, repo, clientFactory = clientFactory)
-    }
-
-    constructor(
-        owner: String,
-        repo: String,
-        githubBaseApiPath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS)
-    ) {
-        this.owner = owner
-        this.repo = repo
-        pullRequestsService = GithubPullRequestsService(owner, repo, githubBaseApiPath, githubTokens)
-        commitService = GithubCommitService(owner, repo, githubBaseApiPath, githubTokens)
-        branchService = GithubBranchService(owner, repo, githubBaseApiPath, githubTokens)
-    }
-
-    constructor(
-        owner: String,
-        repo: String,
-        githubBaseApiPath: String = GITHUB_API_PATH,
-        githubTokens: List<String> = listOf(ANONYMOUS),
-        clientFactory: GithubHttpClientFactory
-    ) {
-        this.owner = owner
-        this.repo = repo
-        pullRequestsService = GithubPullRequestsService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
-        commitService = GithubCommitService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
-        branchService = GithubBranchService(owner, repo, githubBaseApiPath, githubTokens, clientFactory)
-    }
-
-    fun export(): RemoteInfoDTO {
-        return RemoteInfoDTO().also {
+    fun export(): GithubProjectDTO {
+        return GithubProjectDTO().also {
             it.branches = branches
             it.commitInfos = commits
             it.pullRequests = pullRequests
@@ -68,16 +38,19 @@ class GithubRepoExporter {
     }
 
     private val pullRequests: List<PullRequestDTO>
-        get() = pullRequestsService.allPullRequests
+        get() = (since?.let { pullRequestsSearchService.getPullRequestsModifiedSince(it) }
+            ?: pullRequestsService.allPullRequests)
             .mapNotNull(PullRequestDTO.Companion::fromPullRequest)
-            .parallelStream()
-            .peek { addAdditionalPrFields(it) }
+            .onEach { addAdditionalPrFields(it) }
             .toList()
 
     private fun addAdditionalPrFields(pullRequestDTO: PullRequestDTO) {
-        addPrCommits(pullRequestDTO)
-        addPrComments(pullRequestDTO)
-        addPrReviews(pullRequestDTO)
+        val commitsThread = thread { addPrCommits(pullRequestDTO) }
+        val commentsThread = thread { addPrComments(pullRequestDTO) }
+        val reviewsThread = thread { addPrReviews(pullRequestDTO) }
+        commitsThread.join()
+        commentsThread.join()
+        reviewsThread.join()
     }
 
     private fun addPrReviews(pullRequestDTO: PullRequestDTO) {
@@ -101,4 +74,5 @@ class GithubRepoExporter {
     private val branches: List<BranchDTO>
         get() = branchService.allBranches
             .mapNotNull(BranchDTO.Companion::fromBranch)
+
 }

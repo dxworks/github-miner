@@ -3,7 +3,7 @@ package org.dxworks.githubminer.service.repository.actions.run
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import org.dxworks.githubminer.utils.TestUtils.githubCredentials
+import org.dxworks.githubminer.TestUtils.githubCredentials
 
 
 internal class GithubRunServiceIT {

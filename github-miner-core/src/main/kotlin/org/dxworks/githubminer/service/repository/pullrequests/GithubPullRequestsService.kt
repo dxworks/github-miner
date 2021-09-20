@@ -30,13 +30,16 @@ class GithubPullRequestsService(
 
     val allPullRequests: List<PullRequest>
         get() {
-            val pullRequestUrl = PullRequestUrl(getApiPath("pulls"), "all")
-            return paginationUtils.getAllElements(pullRequestUrl) {
-                (it.parseIfOk(PULL_REQUESTS_LIST_TYPE) ?: emptyList<PullRequest>()) as List<PullRequest>
-            }.mapNotNull { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
+            return performGetPullRequests(PullRequestUrl(getApiPath("pulls"), "all"))
         }
 
-    fun getPullRequest(pullRequestNumber: Long): PullRequest? {
+    private fun performGetPullRequests(pullRequestUrl: PullRequestUrl): List<PullRequest> {
+        return paginationUtils.getAllElements(pullRequestUrl) {
+            (it.parseIfOk(PULL_REQUESTS_LIST_TYPE) ?: emptyList<PullRequest>()) as List<PullRequest>
+        }.mapNotNull { pullRequest: PullRequest -> getPullRequest(pullRequest.number!!) }
+    }
+
+    fun getPullRequest(pullRequestNumber: Number): PullRequest? {
         val apiPath = getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number")
         return httpClient.get(GenericUrl(apiPath))
             .parseIfOk(PullRequest::class.java)
@@ -46,7 +49,7 @@ class GithubPullRequestsService(
         return getPullRequestCommits(pullRequest.number!!)
     }
 
-    fun getPullRequestCommits(pullRequestNumber: Long): List<RepoCommit> {
+    fun getPullRequestCommits(pullRequestNumber: Number): List<RepoCommit> {
         val apiPath =
             getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "commits")
         val pullRequestCommitsUrl = GenericUrl(apiPath)
@@ -59,7 +62,7 @@ class GithubPullRequestsService(
         return getPullRequestReviews(pullRequest.number!!)
     }
 
-    fun getPullRequestReviews(pullRequestNumber: Long): List<PullRequestReview> {
+    fun getPullRequestReviews(pullRequestNumber: Number): List<PullRequestReview> {
         val apiPath =
             getApiPath(ImmutableMap.of("pull_number", pullRequestNumber.toString()), "pulls", ":pull_number", "reviews")
         val pullRequestReviewsUrl = GenericUrl(apiPath)

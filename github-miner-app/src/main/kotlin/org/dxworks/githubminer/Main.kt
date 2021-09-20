@@ -10,6 +10,7 @@ import org.dxworks.argumenthor.config.sources.impl.ArgsSource
 import org.dxworks.argumenthor.config.sources.impl.EnvSource
 import org.dxworks.argumenthor.config.sources.impl.PropertiesSource
 import org.dxworks.githubminer.config.BooleanField
+import org.dxworks.githubminer.config.DateField
 import org.dxworks.githubminer.config.Repo
 import org.dxworks.githubminer.config.RepoListField
 import org.dxworks.githubminer.constants.ANONYMOUS
@@ -18,9 +19,11 @@ import org.dxworks.githubminer.http.factory.DefaultGithubHttpClientFactory
 import org.dxworks.utils.java.rest.client.utils.JsonMapper
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.LocalDate
 
 
 private const val GITHUB_REPOS = "github.repos"
+private const val SINCE = "since"
 private const val GITHUB_TOKENS = "github.tokens"
 private const val GITHUB_BASE_PATH = "github.base.path"
 private const val CACHE = "cache"
@@ -34,7 +37,8 @@ fun main(args: Array<String>) {
             StringField(GITHUB_BASE_PATH, GITHUB_API_PATH),
             RepoListField(GITHUB_REPOS, emptyList()),
             StringListField(GITHUB_TOKENS, listOf(ANONYMOUS)),
-            BooleanField(CACHE, true)
+            BooleanField(CACHE, true),
+            DateField(SINCE)
         )
     ).apply {
         addSource(ArgsSource().also { it.argsList = args.toList() })
@@ -45,6 +49,7 @@ fun main(args: Array<String>) {
     val githubBasePath: String = argumenthor.getValue(GITHUB_BASE_PATH)!!
     val repos: List<Repo> = argumenthor.getValue(GITHUB_REPOS)!!
     val tokens: List<String> = argumenthor.getValue(GITHUB_TOKENS)!!
+    val since: LocalDate? = argumenthor.getValue(SINCE)
 
     val resultsPath = Paths.get(RESULTS_FOLDER)
     if (!Files.exists(resultsPath))
@@ -63,7 +68,8 @@ fun main(args: Array<String>) {
                 repo.repo,
                 githubBasePath,
                 tokens,
-                clientFactory
+                clientFactory,
+                since
             ).export()
             JsonMapper().writeJSONtoFile(
                 Paths.get(RESULTS_FOLDER, "${repo.user}-${repo.repo}-prs.json").toFile(),
