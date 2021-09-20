@@ -42,7 +42,9 @@ fun main(args: Array<String>) {
         )
     ).apply {
         addSource(ArgsSource().also { it.argsList = args.toList() })
-        addSource(PropertiesSource().also { it.path = "config/github-miner.properties" })
+        addSource(PropertiesSource().also {
+            it.path = if (args.isEmpty()) "config/github-miner.properties" else args[0]
+        })
         addSource(EnvSource())
     })
 
