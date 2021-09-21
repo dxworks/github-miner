@@ -3,4 +3,5 @@
 *.iml
 target
 /github-miner-core/config
+/config
 results

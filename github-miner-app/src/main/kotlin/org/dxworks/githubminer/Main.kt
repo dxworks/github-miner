@@ -1,6 +1,8 @@
 package org.dxworks.githubminer
 
 import org.dizitart.no2.Nitrite
+import org.dizitart.no2.objects.ObjectRepository
+import org.dizitart.no2.objects.filters.ObjectFilters
 import org.dxworks.argumenthor.Argumenthor
 import org.dxworks.argumenthor.config.ArgumenthorConfiguration
 import org.dxworks.argumenthor.config.fields.impl.StringField
@@ -16,6 +18,8 @@ import org.dxworks.githubminer.constants.ANONYMOUS
 import org.dxworks.githubminer.constants.GITHUB_API_PATH
 import org.dxworks.githubminer.factory.CachingGithubHttpClientFactory
 import org.dxworks.githubminer.http.factory.DefaultGithubHttpClientFactory
+import org.dxworks.githubminer.runs.RunData
+import org.dxworks.githubminer.utils.githubDateFormatter
 import org.dxworks.utils.java.rest.client.utils.JsonMapper
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -51,7 +55,7 @@ fun main(args: Array<String>) {
     val githubBasePath: String = argumenthor.getValue(GITHUB_BASE_PATH)!!
     val repos: List<Repo> = argumenthor.getValue(GITHUB_REPOS)!!
     val tokens: List<String> = argumenthor.getValue(GITHUB_TOKENS)!!
-    val since: LocalDate? = argumenthor.getValue(SINCE)
+    var since: LocalDate? = argumenthor.getValue(SINCE)
 
     val resultsPath = Paths.get(RESULTS_FOLDER)
     if (!Files.exists(resultsPath))
@@ -65,6 +69,13 @@ fun main(args: Array<String>) {
 
     try {
         repos.forEach { repo ->
+            if (database != null) {
+                val runDataRepository = database.getRepository(RunData::class.java)
+                if (since == null) {
+                    since = getLastRunDateOrNull(runDataRepository, repo)
+                }
+                runDataRepository.update(RunData(repo.toString()))
+            }
             val export = GithubRepoExporter(
                 repo.user,
                 repo.repo,
@@ -84,6 +95,12 @@ fun main(args: Array<String>) {
         database?.close()
     }
 }
+
+private fun getLastRunDateOrNull(
+    runDataRepository: ObjectRepository<RunData>,
+    repo: Repo
+) = runDataRepository.find(ObjectFilters.eq("repo", repo.toString())).firstOrNull()
+    ?.let { LocalDate.parse(it.since, githubDateFormatter) }
 
 private fun prepareCache(): Nitrite {
     val cachePath = Paths.get(CACHE_FOLDER)
