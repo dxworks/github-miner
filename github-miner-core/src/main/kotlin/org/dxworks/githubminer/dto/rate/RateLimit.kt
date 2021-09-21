@@ -4,14 +4,12 @@ import com.google.api.client.http.HttpResponseException
 import org.dxworks.githubminer.http.GithubHttpResponse
 import org.dxworks.githubminer.utils.GithubResponseHeaderExtractor
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.ZonedDateTime
 
 class RateLimit(githubHttpResponse: GithubHttpResponse) : GithubResponseHeaderExtractor(githubHttpResponse) {
     val requestLimit: Int = getNumberHeaderValue(RATE_LIMIT, 5000).toInt()
     val remainingRequests: Int = getNumberHeaderValue(REMAINING_REQUESTS, 5000).toInt()
-    var resetTimestamp: ZonedDateTime = ZonedDateTime.now()
+    var resetTimestamp: LocalDateTime = LocalDateTime.MIN
 
     companion object {
         private const val RATE_LIMIT = "X-RateLimit-Limit"
@@ -23,11 +21,11 @@ class RateLimit(githubHttpResponse: GithubHttpResponse) : GithubResponseHeaderEx
     init {
         val resetUtcSeconds = getNumberHeaderValue(RESET_TIMESTAMP, 0)
         if (resetUtcSeconds != 0) resetTimestamp =
-            LocalDateTime.ofEpochSecond(resetUtcSeconds.toLong(), 0, ZoneOffset.UTC).atZone(ZoneId.systemDefault())
+            LocalDateTime.ofEpochSecond(resetUtcSeconds.toLong(), 0, ZoneOffset.UTC)
     }
 
     fun resetTimestampFromAbuse(e: HttpResponseException) {
-        resetTimestamp = ZonedDateTime.now().plusSeconds(
+        resetTimestamp = LocalDateTime.now().plusSeconds(
             try {
                 getHeaderValue(RETRY_AFTER, e.headers).toLong()
             } catch (e: Exception) {

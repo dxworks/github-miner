@@ -14,6 +14,7 @@ import org.dxworks.utils.java.rest.client.providers.CompositeHttpRequestInitiali
 import org.dxworks.utils.java.rest.client.response.HttpResponse
 import org.slf4j.LoggerFactory
 import java.lang.reflect.Type
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 open class GithubHttpClient(private val githubTokens: List<String>, private val githubBasePath: String) :
@@ -151,11 +152,9 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
     private fun waitUntilSoonestRateLimitReset() {
         val waitUntil = tokenRateLimits.values.minOf { it.resetTimestamp }
         log.info("Waiting until $waitUntil")
-        val now = ZonedDateTime.now()
-        if (waitUntil > now)
-            Thread.sleep(
-                (waitUntil.toEpochSecond() - now.toEpochSecond() + 1) * 1000
-            )
+        Thread.sleep(
+            (waitUntil.toEpochSecond(ZoneOffset.UTC) - ZonedDateTime.now(ZoneOffset.UTC).toEpochSecond() + 1) * 1000
+        )
         getTokenRateLimits()
     }
 
