@@ -28,11 +28,11 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
     }
 
     override fun get(url: GenericUrl, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
-        return performRequest {
+        return performRequest(url) { genericUrl, token ->
             GithubHttpResponse(
                 super.get(
-                    url,
-                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                    genericUrl,
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(token), customRequestInitializer)
                 )
             )
         }
@@ -40,12 +40,12 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
 
     override fun patch(url: GenericUrl, body: Any?, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
         log.info("[PATCH] $url")
-        return performRequest {
+        return performRequest(url) { genericUrl, token ->
             GithubHttpResponse(
                 super.patch(
-                    url,
+                    genericUrl,
                     body,
-                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(token), customRequestInitializer)
                 )
             )
         }
@@ -53,12 +53,12 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
 
     override fun post(url: GenericUrl, body: Any?, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
         log.info("[POST] $url")
-        return performRequest {
+        return performRequest(url) { genericUrl, token ->
             GithubHttpResponse(
                 super.post(
-                    url,
+                    genericUrl,
                     body,
-                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(token), customRequestInitializer)
                 )
             )
         }
@@ -66,15 +66,20 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
 
     override fun put(url: GenericUrl?, body: Any?, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
         log.info("[PUT] $url")
-        return performRequest {
-            GithubHttpResponse(
-                super.put(
-                    url,
-                    body,
-                    CompositeHttpRequestInitializer(GithubBearerAuthenticationProvider(it), customRequestInitializer)
+        return url?.let {
+            performRequest(it) { genericUrl, token ->
+                GithubHttpResponse(
+                    super.put(
+                        genericUrl,
+                        body,
+                        CompositeHttpRequestInitializer(
+                            GithubBearerAuthenticationProvider(token),
+                            customRequestInitializer
+                        )
+                    )
                 )
-            )
-        }
+            }
+        } ?: GithubHttpErrorResponse(url, NullPointerException("Url was null"))
     }
 
     private fun getTokenRateLimits() {
@@ -99,12 +104,20 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
         }
     }
 
-    private fun performRequest(doRequest: (token: String) -> GithubHttpResponse) = if (!rateLimitEnabled)
-        doRequest(validTokens.firstOrNull() ?: ANONYMOUS)
-    else
-        tryPerformRequestConsideringRateLimit(doRequest)
+    private fun performRequest(url: GenericUrl, doRequest: (url: GenericUrl, token: String) -> GithubHttpResponse) =
+        try {
+            if (!rateLimitEnabled)
+                doRequest(url, validTokens.firstOrNull() ?: ANONYMOUS)
+            else
+                tryPerformRequestConsideringRateLimit(url, doRequest)
+        } catch (e: Exception) {
+            GithubHttpErrorResponse(url, e)
+        }
 
-    private fun tryPerformRequestConsideringRateLimit(doRequest: (token: String) -> GithubHttpResponse): GithubHttpResponse {
+    private fun tryPerformRequestConsideringRateLimit(
+        url: GenericUrl,
+        doRequest: (url: GenericUrl, token: String) -> GithubHttpResponse
+    ): GithubHttpResponse {
         while (true) {
             val activeTokens = retrieveActiveTokens()
             var response: GithubHttpResponse?
@@ -113,7 +126,7 @@ open class GithubHttpClient(private val githubTokens: List<String>, private val 
             } else {
                 val usedToken = activeTokens.first()
                 try {
-                    response = doRequest(usedToken).also {
+                    response = doRequest(url, usedToken).also {
                         tokenRateLimits[usedToken] = it.rateLimit
                     }
                     return response

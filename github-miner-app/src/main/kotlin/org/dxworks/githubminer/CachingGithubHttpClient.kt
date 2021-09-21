@@ -14,6 +14,7 @@ import org.dizitart.no2.objects.ObjectRepository
 import org.dizitart.no2.objects.filters.ObjectFilters
 import org.dxworks.githubminer.http.GithubHttpClient
 import org.dxworks.githubminer.http.GithubHttpResponse
+import org.dxworks.githubminer.utils.EXCEPTION_STATUS_CODE
 import org.dxworks.utils.java.rest.client.providers.CompositeHttpRequestInitializer
 import org.dxworks.utils.java.rest.client.response.HttpResponse
 
@@ -25,7 +26,7 @@ class CachingGithubHttpClient(
     githubBasePath
 ) {
     override fun get(url: GenericUrl, customRequestInitializer: HttpRequestInitializer?): HttpResponse {
-        return getCachedResponse(url)?.let { cachedResponse ->
+        return getCachedResponse(url)?.takeIf { it.statusCode != EXCEPTION_STATUS_CODE }?.let { cachedResponse ->
             val response = super.get(
                 url, getModifiedCheckingInitializer(customRequestInitializer, cachedResponse)
             )
